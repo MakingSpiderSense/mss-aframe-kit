@@ -1,9 +1,9 @@
-/*! mss-a-frame-kit v0.1.0 */
+/*! mss-aframe-kit v0.1.0 */
 (function(factory) {
   typeof define === "function" && define.amd ? define(factory) : factory();
 })(function() {
   "use strict";
-  console.log("component-a.js loaded again!! !! what?");
+  console.log("component-a.js loaded");
   const __vite_glob_0_0 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
     __proto__: null
   }, Symbol.toStringTag, { value: "Module" }));
