@@ -1,0 +1,1 @@
+console.log('component-a.js loaded again!! !! what?');

@@ -1,0 +1,29 @@
+{
+    "name": "mss-a-frame-kit",
+    "version": "0.1.0",
+    "description": "A collection of extra A-Frame components built for my projects.",
+    "main": "dist/mss-aframe-kit.js",
+    "module": "dist/mss-aframe-kit.js",
+    "scripts": {
+        "dev": "vite",
+        "watch": "vite build --watch",
+        "build": "vite build",
+        "build:min": "cross-env BUILD_MINIFY=true vite build",
+        "build:unmin": "cross-env BUILD_MINIFY=false vite build",
+        "preview": "vite preview"
+    },
+    "keywords": [
+        "aframe",
+        "a-frame",
+        "components",
+        "kit",
+        "mss"
+    ],
+    "author": "Ben Moran",
+    "license": "MIT",
+    "devDependencies": {
+        "vite": "^6.0.0",
+        "vite-plugin-banner": "^0.8.0",
+        "cross-env": "^7.0.0"
+    }
+}
