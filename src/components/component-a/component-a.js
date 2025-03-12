@@ -1,1 +1,0 @@
-console.log('component-a.js loaded');
