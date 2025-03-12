@@ -50,3 +50,4 @@ dbc.php
 .github/copilot-instructions.md
 npm-debug.log*
 *.map
+notes.md
