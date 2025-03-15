@@ -1,4 +1,4 @@
-/*! mss-aframe-kit v0.1.0 */
+/*! mss-aframe-kit v1.0.0 */
 (function(factory) {
   typeof define === "function" && define.amd ? define(factory) : factory();
 })(function() {
@@ -388,6 +388,104 @@
   const __vite_glob_0_2 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
     __proto__: null
   }, Symbol.toStringTag, { value: "Module" }));
+  AFRAME.registerComponent("music-player", {
+    schema: { songs: { type: "array", default: [] } },
+    init: function() {
+      const sceneEl = this.el.sceneEl;
+      const leftController = document.querySelector("#left-hand");
+      if (!leftController) {
+        console.error("No #left-hand controller found for music-player");
+        return;
+      }
+      leftController.addEventListener("xbuttonup", () => this.togglePause());
+      leftController.addEventListener("ybuttonup", () => this.nextTrack());
+      document.addEventListener("keyup", (e) => {
+        if (e.code === "Space") {
+          this.togglePause();
+        } else if (e.code === "KeyN") {
+          this.nextTrack();
+        }
+      });
+      if (this.data.songs.length === 0) {
+        let storedSongs = localStorage.getItem("musicPlayerSongs");
+        if (storedSongs) {
+          try {
+            let parsedSongs = JSON.parse(storedSongs);
+            if (Array.isArray(parsedSongs) && parsedSongs.length > 0) {
+              this.data.songs = parsedSongs;
+            }
+          } catch (e) {
+            console.warning("Error parsing musicPlayerSongs from localStorage", e);
+          }
+        }
+      }
+      if (this.data.songs.length === 0) {
+        console.warning("No songs found for music-player");
+        return;
+      }
+      this.currentPlaylist = this.shuffle(this.data.songs.slice());
+      this.audio = new Audio();
+      this.audio.addEventListener("ended", () => {
+        this.playNextSong();
+      });
+      this.audio.addEventListener("error", (e) => {
+        console.error("Error loading song: " + this.currentSong, e);
+        this.playNextSong();
+      });
+      this.boundStartPlayback = this.startPlayback.bind(this);
+      document.addEventListener("click", this.boundStartPlayback, { once: true });
+      sceneEl.addEventListener("enter-vr", () => {
+        if (AFRAME.utils.device.checkHeadsetConnected()) {
+          console.log("VR entered, starting music playback");
+          this.boundStartPlayback();
+          document.removeEventListener("click", this.boundStartPlayback);
+        }
+      });
+    },
+    startPlayback: function() {
+      this.playNextSong();
+    },
+    playNextSong: function() {
+      if (this.currentPlaylist.length === 0) {
+        this.currentPlaylist = this.shuffle(this.data.songs.slice());
+        console.log("Playlist resetting");
+      }
+      let nextSong = this.currentPlaylist.pop();
+      nextSong = nextSong.trim();
+      if (nextSong.startsWith("'")) {
+        nextSong = nextSong.slice(1);
+      }
+      if (nextSong.endsWith("'")) {
+        nextSong = nextSong.slice(0, -1);
+      }
+      this.currentSong = nextSong;
+      console.log("Playing: " + nextSong);
+      this.audio.src = "assets/audio/music/" + encodeURI(nextSong);
+      this.audio.play();
+    },
+    // Toggle pause/resume
+    togglePause: function() {
+      if (this.audio.paused) {
+        this.audio.play();
+      } else {
+        this.audio.pause();
+      }
+    },
+    // Skip to next track
+    nextTrack: function() {
+      this.playNextSong();
+    },
+    shuffle: function(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        let j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+  });
+  const __vite_glob_0_3 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+    __proto__: null
+  }, Symbol.toStringTag, { value: "Module" }));
   AFRAME.registerComponent("raycaster-listener", {
     init: function() {
       console.log("Raycaster Listener initialized");
@@ -419,7 +517,7 @@
       });
     }
   });
-  const __vite_glob_0_3 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  const __vite_glob_0_4 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
     __proto__: null
   }, Symbol.toStringTag, { value: "Module" }));
   AFRAME.registerComponent("raycaster-manager", {
@@ -473,7 +571,7 @@
       }
     }
   });
-  const __vite_glob_0_4 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  const __vite_glob_0_5 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
     __proto__: null
   }, Symbol.toStringTag, { value: "Module" }));
   AFRAME.registerComponent("refresh-raycaster-on-model-load", {
@@ -500,7 +598,7 @@
       });
     }
   });
-  const __vite_glob_0_5 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  const __vite_glob_0_6 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
     __proto__: null
   }, Symbol.toStringTag, { value: "Module" }));
   AFRAME.registerComponent("", {
@@ -543,7 +641,7 @@
       this.el.setAttribute("text", "value", this.messages.join("\n"));
     }
   });
-  const __vite_glob_0_6 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  const __vite_glob_0_7 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
     __proto__: null
   }, Symbol.toStringTag, { value: "Module" }));
   AFRAME.registerComponent("vr-mode-detect", {
@@ -562,10 +660,10 @@
       });
     }
   });
-  const __vite_glob_0_7 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  const __vite_glob_0_8 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
     __proto__: null
   }, Symbol.toStringTag, { value: "Module" }));
-  const components = /* @__PURE__ */ Object.assign({ "./components/_helpers/helpers.js": __vite_glob_0_0, "./components/delayed-dynamic-body/delayed-dynamic-body.js": __vite_glob_0_1, "./components/holdable/holdable.js": __vite_glob_0_2, "./components/raycaster-listener/raycaster-listener.js": __vite_glob_0_3, "./components/raycaster-manager/raycaster-manager.js": __vite_glob_0_4, "./components/refresh-raycaster-on-model-load/refresh-raycaster-on-model-load.js": __vite_glob_0_5, "./components/vr-logger/vr-logger.js": __vite_glob_0_6, "./components/vr-mode-detect/vr-mode-detect.js": __vite_glob_0_7 });
+  const components = /* @__PURE__ */ Object.assign({ "./components/_helpers/helpers.js": __vite_glob_0_0, "./components/delayed-dynamic-body/delayed-dynamic-body.js": __vite_glob_0_1, "./components/holdable/holdable.js": __vite_glob_0_2, "./components/music-player/music-player.js": __vite_glob_0_3, "./components/raycaster-listener/raycaster-listener.js": __vite_glob_0_4, "./components/raycaster-manager/raycaster-manager.js": __vite_glob_0_5, "./components/refresh-raycaster-on-model-load/refresh-raycaster-on-model-load.js": __vite_glob_0_6, "./components/vr-logger/vr-logger.js": __vite_glob_0_7, "./components/vr-mode-detect/vr-mode-detect.js": __vite_glob_0_8 });
   console.log("MSS A-Frame Kit Loaded", components);
 });
 //# sourceMappingURL=mss-aframe-kit.js.map
