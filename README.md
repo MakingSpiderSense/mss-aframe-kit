@@ -17,7 +17,7 @@ Coming soon...
 If a custom component shares a name with one from `mss-aframe-kit` and it's not needed, it can be removed before registering the new one. For example:
 
 ```javascript
-delete AFRAME.components["music-player"];
+delete AFRAME.components["holdable"];
 ```
 
 ## License
