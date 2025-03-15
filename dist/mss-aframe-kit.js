@@ -1,4 +1,4 @@
-/*! mss-aframe-kit v1.0.0 */
+/*! mss-aframe-kit v1.0.1 */
 (function(factory) {
   typeof define === "function" && define.amd ? define(factory) : factory();
 })(function() {
@@ -601,7 +601,7 @@
   const __vite_glob_0_6 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
     __proto__: null
   }, Symbol.toStringTag, { value: "Module" }));
-  AFRAME.registerComponent("", {
+  AFRAME.registerComponent("vr-logger", {
     schema: {
       maxMessages: { type: "int", default: 5 }
       // Maximum number of messages to display
@@ -615,7 +615,7 @@
       }
       this.messages = [];
       this.el.setAttribute("text", {
-        color: "black",
+        color: "white",
         width: 3,
         // Width of the text box
         wrapCount: 45,

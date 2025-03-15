@@ -1,5 +1,5 @@
 // VR Console Logger
-AFRAME.registerComponent('', {
+AFRAME.registerComponent('vr-logger', {
     schema: {
         maxMessages: { type: 'int', default: 5 } // Maximum number of messages to display
     },
@@ -12,7 +12,7 @@ AFRAME.registerComponent('', {
         }
         this.messages = [];
         this.el.setAttribute('text', {
-            color: 'black',
+            color: 'white',
             width: 3, // Width of the text box
             wrapCount: 45, // Number of characters per line before wrapping
             align: 'left',
