@@ -12,6 +12,14 @@ Tested up to **A-Frame 1.6.0**.
 
 Coming soon...
 
+## Conflicts
+
+If a custom component shares a name with one from `mss-aframe-kit` and it's not needed, it can be removed before registering the new one. For example:
+
+```javascript
+delete AFRAME.components["music-player"];
+```
+
 ## License
 
 You are free to use *mss-aframe-kit* in your own projects.
