@@ -8,6 +8,8 @@
 - Styled visual rays are siblings to the raycasters with the class `styled-ray`.
 - Raycasters are initially disabled by default.
 
+<video src="raycaster-manager-demo.mp4" autoplay loop muted playsinline style="display: flex; max-width: 100%; margin: 50px auto;"></video>
+
 ## Example Usage
 
 Add the `raycaster-manager` component to the scene to enable automatic raycaster management:
