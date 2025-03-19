@@ -6,7 +6,7 @@
 
 Each A-Frame component is maintained in its own folder under `src/components/`. Some components include their own README files with detailed documentation. Check the README.md file in each component’s folder for more information. The project includes both minified and unminified builds in the `dist/` folder.
 
-Tested up to **A-Frame 1.6.0**.
+Tested up to **A-Frame 1.7.0**.
 
 ## Features
 
