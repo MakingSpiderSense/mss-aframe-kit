@@ -4,7 +4,6 @@
 *.psd
 
 # Video
-*.mp4
 *.avi
 *.webm
 *.mkv
