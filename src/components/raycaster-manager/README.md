@@ -8,7 +8,9 @@
 - Styled visual rays are siblings to the raycasters with the class `styled-ray`.
 - Raycasters are initially disabled by default.
 
-<video src="raycaster-manager-demo.mp4" autoplay loop muted playsinline style="display: flex; max-width: 100%; margin: 50px auto;"></video>
+**View Demo**
+
+[![View Demo](demo-thumbnail.jpg)](https://www.youtube.com/watch?v=5M6M5AuEHZk)
 
 ## Example Usage
 
