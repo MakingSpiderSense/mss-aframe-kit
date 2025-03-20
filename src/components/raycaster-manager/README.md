@@ -44,3 +44,7 @@ Add the `raycaster-manager` component to the scene to enable automatic raycaster
 - It is not possible to have both raycasters active simultaneously.
 - The component assumes a specifically named controllers and class-based raycaster organization.
 - Initially, raycasters must be disabled; the component does not auto-detect their state at initialization.
+
+---
+
+Feel free to reach out to me at [Making Spider Sense](https://makingspidersense.com/contact/) for any questions!
