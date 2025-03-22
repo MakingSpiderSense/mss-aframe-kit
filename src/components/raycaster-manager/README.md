@@ -3,10 +3,13 @@
 ## Overview
 
 `raycaster-manager` is an A-Frame component designed to dynamically enable and disable raycasters attached to VR controllers. It ensures that only one controller's raycaster is active at a time and provides optional audio feedback when toggling. This component assumes a specific scene setup where:
+
 - Controllers have the IDs `left-hand` and `right-hand`.
 - Raycasters are children of the controllers with the class `actual-ray`.
 - Styled visual rays are siblings to the raycasters with the class `styled-ray`.
 - Raycasters are initially disabled by default.
+
+_Tested with A-Frame 1.7.0._
 
 **View Demo**
 
