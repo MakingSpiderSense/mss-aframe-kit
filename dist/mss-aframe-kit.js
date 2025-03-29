@@ -1,4 +1,4 @@
-/*! mss-aframe-kit v1.0.1 */
+/*! mss-aframe-kit v1.0.2 */
 (function(factory) {
   typeof define === "function" && define.amd ? define(factory) : factory();
 })(function() {
@@ -415,12 +415,12 @@
               this.data.songs = parsedSongs;
             }
           } catch (e) {
-            console.warning("Error parsing musicPlayerSongs from localStorage", e);
+            console.warn("Error parsing musicPlayerSongs from localStorage", e);
           }
         }
       }
       if (this.data.songs.length === 0) {
-        console.warning("No songs found for music-player");
+        console.warn("No songs found for music-player");
         return;
       }
       this.currentPlaylist = this.shuffle(this.data.songs.slice());
