@@ -1,7 +1,7 @@
-/*! mss-aframe-kit v1.0.2 */
-(function(factory) {
-  typeof define === "function" && define.amd ? define(factory) : factory();
-})(function() {
+/*! mss-aframe-kit v1.0.3 */
+(function(global, factory) {
+  typeof exports === "object" && typeof module !== "undefined" ? factory(exports) : typeof define === "function" && define.amd ? define(["exports"], factory) : (global = typeof globalThis !== "undefined" ? globalThis : global || self, factory(global.MSSAFrameKit = {}));
+})(this, function(exports2) {
   "use strict";
   function triggerHaptics(hand, duration, force) {
     const leftHand = document.querySelector("#left-hand");
@@ -665,5 +665,9 @@
   }, Symbol.toStringTag, { value: "Module" }));
   const components = /* @__PURE__ */ Object.assign({ "./components/_helpers/helpers.js": __vite_glob_0_0, "./components/delayed-dynamic-body/delayed-dynamic-body.js": __vite_glob_0_1, "./components/holdable/holdable.js": __vite_glob_0_2, "./components/music-player/music-player.js": __vite_glob_0_3, "./components/raycaster-listener/raycaster-listener.js": __vite_glob_0_4, "./components/raycaster-manager/raycaster-manager.js": __vite_glob_0_5, "./components/refresh-raycaster-on-model-load/refresh-raycaster-on-model-load.js": __vite_glob_0_6, "./components/vr-logger/vr-logger.js": __vite_glob_0_7, "./components/vr-mode-detect/vr-mode-detect.js": __vite_glob_0_8 });
   console.log("MSS A-Frame Kit Loaded", components);
+  exports2.initVibration = initVibration;
+  exports2.triggerHapticPattern = triggerHapticPattern;
+  exports2.triggerHaptics = triggerHaptics;
+  Object.defineProperty(exports2, Symbol.toStringTag, { value: "Module" });
 });
 //# sourceMappingURL=mss-aframe-kit.js.map

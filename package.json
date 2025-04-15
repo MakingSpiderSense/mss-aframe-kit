@@ -1,6 +1,6 @@
 {
     "name": "mss-aframe-kit",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "description": "A collection of extra A-Frame components built for my projects.",
     "main": "dist/mss-aframe-kit.js",
     "module": "dist/mss-aframe-kit.js",
