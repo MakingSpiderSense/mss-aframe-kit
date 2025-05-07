@@ -1,0 +1,72 @@
+<!doctype html>
+<html>
+<head>
+    <title>Arm Swing Movement - Example</title>
+	<script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
+    <script src="https://unpkg.com/aframe-environment-component@1.5.x/dist/aframe-environment-component.min.js"></script><!-- Not important -->
+    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.5.4/dist/aframe-extras.min.js"></script><!-- Only needed if you want to use a nav mesh -->
+    <script src="https://cdn.jsdelivr.net/gh/MozillaReality/ammo.js@8bbc0ea/builds/ammo.wasm.js"></script><!-- Not important -->
+    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-physics-system@v4.2.2/dist/aframe-physics-system.js"></script><!-- Not important -->
+    <script src="arm-swing-movement.js"></script>
+</head>
+
+<body>
+    <a-scene physics="driver: ammo;">
+
+        <!-- Asset Management System -->
+        <a-assets>
+            <audio id="footsteps" src="https://cdn.jsdelivr.net/gh/MakingSpiderSense/mss-aframe-kit@main/src/components/arm-swing-movement/assets/footsteps-v1.mp3"></audio>
+			<a-asset-item id="my-nav-mesh" src="https://cdn.jsdelivr.net/gh/MakingSpiderSense/mss-aframe-kit@main/src/components/arm-swing-movement/assets/nav-mesh.glb"></a-asset-item>
+			<a-asset-item id="walls-mesh" src="https://cdn.jsdelivr.net/gh/MakingSpiderSense/mss-aframe-kit@main/src/components/arm-swing-movement/assets/walls-v1.0.glb"></a-asset-item>
+        </a-assets>
+
+        <!-- Environment -->
+        <a-entity class="env-dream" environment="preset: dream; groundColor: #445; grid: cross; seed: 3;"></a-entity>
+		<!-- Navigation Mesh -->
+		<a-entity gltf-model="#my-nav-mesh" nav-mesh position="0 -0.1 0" visible="false"></a-entity>
+        <!-- Floor Physics Mesh -->
+		<a-entity position="0 -0.1 0" visible="false" add-model-after-load="model: #my-nav-mesh; body: static; shape: mesh; restitution: .4;"></a-entity>
+        <!-- Walls Physics Mesh -->
+        <a-entity position="0 0 0" visible="false" add-model-after-load="model: #walls-mesh; body: static; shape: mesh; restitution: .6;"></a-entity>
+        <!-- Ball -->
+        <a-sphere class="ball" position="-8 2 -11" radius=".5" color="#53e4e1" ammo-body="type: dynamic; restitution: 1; mass: 1;" ammo-shape="type: sphere; fit: manual; sphereRadius: 0.5"></a-sphere>
+
+		<!-- Rig: Add "Arm Swing" component here -->
+		<a-entity class="user" position="0 0 6" movement-controls="speed: .5; constrainToNavMesh: true;" arm-swing-movement="reverseButtonEvent: xbuttondown; soundEntity: #footsteps; soundVolume: .25; oneStepPlaybackRate: .75; debug: false;">
+			<!-- Camera -->
+			<a-entity camera look-controls="pointerLockEnabled: false" position="0 1.6 0" ammo-body="type: kinematic" ammo-shape="type: box; fit: manual; sphereRadius:0.5"></a-entity>
+            <!-- Controllers -->
+            <a-entity class="controllers">
+                <a-entity id="left-hand" meta-touch-controls="hand: left"></a-entity>
+                <a-entity id="right-hand" meta-touch-controls="hand: right"></a-entity>
+            </a-entity>
+        </a-entity>
+
+    </a-scene>
+
+    <!-- Not important -->
+    <script>
+        AFRAME.registerComponent('add-model-after-load', {
+            schema: {
+                model: { default: '' },
+                body: { type: 'string', default: 'dynamic' },
+                shape: { type: 'string', default: 'hull' },
+                restitution: { type: 'number', default: 0 },
+            },
+            init() {
+                const gltfModel = document.createElement('a-entity');
+                this.el.appendChild(gltfModel);
+                gltfModel.setAttribute('gltf-model', this.data.model);
+                gltfModel.setAttribute('shadow', { receive: false });
+                // Specify what type of ammo-body (dynamic, static, kinematic)
+                gltfModel.setAttribute('ammo-body', { type: this.data.body, restitution: this.data.restitution });
+                // Wait for model to load before adding ammo-shape (box, cylinder, sphere, capsule, cone, hull)
+                this.el.addEventListener('model-loaded', () => {
+                    gltfModel.setAttribute('ammo-shape', { type: this.data.shape });
+                })
+            }
+        });
+    </script>
+
+</body>
+</html>
