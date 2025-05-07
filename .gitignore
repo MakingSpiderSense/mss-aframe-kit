@@ -16,12 +16,10 @@
 *.gif
 
 # Audio
-*.mp3
 *.wav
 
 # 3D Objects
 *.gltf
-*.glb
 *.obj
 *.mtl
 
