@@ -3,6 +3,8 @@
  *
  * This assumes several things are set up in the scene. The controllers should have the ID 'left-hand' and 'right-hand'. The raycasters should be children of the controllers and have the class 'actual-ray'. The styled ray should be a sibling of the actual ray and have the class 'styled-ray'. The raycasters should be disabled by default, although I would like to update this to be able to detect if the raycaster is already active and toggle it accordingly. The styled ray can optionally have a sound component with a sound attached.
  *
+ * To Do: Allow for custom selectors for the controllers.
+ *
  */
 AFRAME.registerComponent('raycaster-manager', {
     init: function () {
