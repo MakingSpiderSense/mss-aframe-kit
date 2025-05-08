@@ -44,3 +44,4 @@ dbc.php
 npm-debug.log*
 *.map
 notes.md
+/src/components/index.php
