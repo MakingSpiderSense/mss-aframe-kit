@@ -14,6 +14,11 @@
         <!-- Environment: Not important -->
         <a-entity class="env-dream" environment="preset: default; seed: 1;"></a-entity>
 
+        <!-- Asset Management System -->
+        <a-assets>
+            <audio id="raycaster-beep" src="assets/raycaster.mp3"></audio>
+        </a-assets>
+
         <!-- Box (will change color when user presses trigger) -->
         <a-box class="interactable" toggle-color position="0 1 4.5" color="red" width=".5" height=".5" depth=".5"></a-box>
 
@@ -24,11 +29,11 @@
             <!-- Controllers -->
             <a-entity class="controllers">
                 <a-entity id="left-hand" meta-touch-controls="hand: left">
-                    <a-cylinder class="styled-ray ar-left" visible="false" position="0 -.389 -.673" height="1.455" radius="0.002" color="#ffffff" rotation="60 0 0" opacity=".4" sound="src: #raycaster-beep; volume: .1;"></a-cylinder>
+                    <a-cylinder class="styled-ray ar-left" visible="false" position="0 -.389 -.673" height="1.455" radius="0.002" color="#ffffff" rotation="60 0 0" opacity=".4" sound="src: #raycaster-beep; volume: .1; poolSize: 4;"></a-cylinder>
                     <a-entity class="actual-ray" rotation="-30 0 0"  raycaster="objects: .interactable; autoRefresh: false; enabled: false; far: 1.5; showLine: false; lineColor: red"></a-entity>
                 </a-entity>
                 <a-entity id="right-hand" meta-touch-controls="hand: right">
-                    <a-cylinder class="styled-ray ar-right" visible="false" position="0 -.389 -.673" height="1.455" radius="0.002" color="#ffffff" rotation="60 0 0" opacity=".4" sound="src: #raycaster-beep; volume: .1;"></a-cylinder>
+                    <a-cylinder class="styled-ray ar-right" visible="false" position="0 -.389 -.673" height="1.455" radius="0.002" color="#ffffff" rotation="60 0 0" opacity=".4" sound="src: #raycaster-beep; volume: .1; poolSize: 4;"></a-cylinder>
                     <a-entity class="actual-ray" rotation="-30 0 0"  raycaster="objects: .interactable; autoRefresh: false; enabled: false; far: 1.5; showLine: false; lineColor: red"></a-entity>
                 </a-entity>
             </a-entity>
