@@ -1,7 +1,7 @@
 /**
  * Arm Swing Movement Component
  *
- * Description: This component turns a player's arm swings into locomotion. Each time either controller's Z‑axis motion reverses, it registers a "step", averages the last ten swing periods, converts that cadence into meters‑per‑second with a speed factor, then eases toward that target over a smoothing window. The rig moves forward along the live average of both controllers' forward vectors (clamped to a nav‑mesh if active on movement‑controls) and can reverse when a specified button is held. Speed is bounded by optional min/max values and drops to zero after a swing‑timeout of inactivity. While moving, an optional sound entity plays footstep audio whose playback‑rate tracks step rate.
+ * Description: `arm-swing-movement` enables intuitive, full-body locomotion in VR by translating natural arm-swinging gestures into forward (or backward) movement. This component is ideal for VR experiences where you want users to physically feel like they're walking or jogging through the environment - without the need for specialized hardware like an omnidirectional treadmill. It uses the Z-axis reversal of each controller to detect "steps", dynamically calculates a target speed, and moves the player rig accordingly. It supports nav-mesh constrained movement, adjustable smoothing, speed limits, and even synchronized footstep sound playback for added realism.
  *
  * Limitations:
  * - The formula that converts steps/sec to m/s to is based on the average adult height. A height parameter could be added to the schema in the future.

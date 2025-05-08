@@ -8,9 +8,9 @@ Each A-Frame component is maintained in its own folder under `src/components/`. 
 
 Tested up to **A-Frame 1.7.0**.
 
-## Features
+## Featured Components
 
-Coming soon...
+- **[arm-swing-movement](#)** enables intuitive, full-body locomotion in VR by translating natural arm-swinging gestures into forward (or backward) movement. This component is ideal for VR experiences where you want users to physically feel like they're walking or jogging through the environment - without the need for specialized hardware like an omnidirectional treadmill. It uses the Z-axis reversal of each controller to detect "steps", dynamically calculates a target speed, and moves the player rig accordingly. It supports nav-mesh constrained movement, adjustable smoothing, speed limits, and even synchronized footstep sound playback for added realism.
 
 ## Conflicts
 
