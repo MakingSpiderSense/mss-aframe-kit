@@ -1,4 +1,4 @@
-/*! mss-aframe-kit v1.0.4 */
+/*! mss-aframe-kit v1.0.6 */
 (function(global, factory) {
   typeof exports === "object" && typeof module !== "undefined" ? factory(exports) : typeof define === "function" && define.amd ? define(["exports"], factory) : (global = typeof globalThis !== "undefined" ? globalThis : global || self, factory(global.MSSAFrameKit = {}));
 })(this, function(exports2) {
@@ -65,9 +65,9 @@
     schema: {
       enabled: { type: "boolean", default: true },
       // Enable or disable the component
-      leftController: { type: "selector", default: '[oculus-touch-controls*="hand: left"], [oculus-touch-controls*="hand:left"], [meta-touch-controls*="hand: left"], [meta-touch-controls*="hand:left"]' },
+      leftController: { type: "selector", default: '[oculus-touch-controls*="hand: left"], [oculus-touch-controls*="hand:left"], [meta-touch-controls*="hand: left"], [meta-touch-controls*="hand:left"], [hand-controls*="hand: left"], [hand-controls*="hand:left"]' },
       // Selector for left controller
-      rightController: { type: "selector", default: '[oculus-touch-controls*="hand: right"], [oculus-touch-controls*="hand:right"], [meta-touch-controls*="hand: right"], [meta-touch-controls*="hand:right"]' },
+      rightController: { type: "selector", default: '[oculus-touch-controls*="hand: right"], [oculus-touch-controls*="hand:right"], [meta-touch-controls*="hand: right"], [meta-touch-controls*="hand:right"], [hand-controls*="hand: right"], [hand-controls*="hand:right"]' },
       // Selector for right controller
       speedFactor: { type: "number", default: 1 },
       // Multiplier for movement speed
