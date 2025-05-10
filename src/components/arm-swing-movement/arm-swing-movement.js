@@ -9,8 +9,8 @@
 AFRAME.registerComponent('arm-swing-movement', {
     schema: {
         enabled: {type: 'boolean', default: true}, // Enable or disable the component
-        leftController: {type: 'selector', default: '[oculus-touch-controls*="hand: left"], [oculus-touch-controls*="hand:left"], [meta-touch-controls*="hand: left"], [meta-touch-controls*="hand:left"]'}, // Selector for left controller
-        rightController: {type: 'selector', default: '[oculus-touch-controls*="hand: right"], [oculus-touch-controls*="hand:right"], [meta-touch-controls*="hand: right"], [meta-touch-controls*="hand:right"]'}, // Selector for right controller
+        leftController: {type: 'selector', default: '[oculus-touch-controls*="hand: left"], [oculus-touch-controls*="hand:left"], [meta-touch-controls*="hand: left"], [meta-touch-controls*="hand:left"], [hand-controls*="hand: left"], [hand-controls*="hand:left"]'}, // Selector for left controller
+        rightController: {type: 'selector', default: '[oculus-touch-controls*="hand: right"], [oculus-touch-controls*="hand:right"], [meta-touch-controls*="hand: right"], [meta-touch-controls*="hand:right"], [hand-controls*="hand: right"], [hand-controls*="hand:right"]'}, // Selector for right controller
         speedFactor: {type: 'number', default: 1}, // Multiplier for movement speed
         smoothingTime: {type: 'number', default: 500}, // Time (ms) to smooth speed changes (e.g., at 500ms, a sudden stop from 6 m/s takes 500ms to reach 0)
         minSpeed: {type: 'number', default: null}, // Minimum speed (m/s) to consider the user moving. If null, .6 * speedFactor is used.
