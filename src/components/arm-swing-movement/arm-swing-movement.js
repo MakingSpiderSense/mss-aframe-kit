@@ -27,9 +27,7 @@ AFRAME.registerComponent("arm-swing-movement", {
     },
     init: function () {
         // If not enabled, return
-        if (!this.data.enabled) {
-            return;
-        }
+        if (!this.data.enabled) return;
         // Create controller arrows (left and right)
         this.controllerArrows = [];
         const left = this.createControllerArrow("left");
@@ -77,9 +75,7 @@ AFRAME.registerComponent("arm-swing-movement", {
     },
     tick: function (time, timeDelta) {
         // If not enabled, return
-        if (!this.data.enabled) {
-            return;
-        }
+        if (!this.data.enabled) return;
         // Update direction every so often
         this.timeSinceLastSample += timeDelta;
         //     Update the direction every `avgDirectionSampleInterval` milliseconds

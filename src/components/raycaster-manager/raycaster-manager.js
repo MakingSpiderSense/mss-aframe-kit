@@ -6,31 +6,31 @@
  * To Do: Allow for custom selectors for the controllers.
  *
  */
-AFRAME.registerComponent('raycaster-manager', {
+AFRAME.registerComponent("raycaster-manager", {
     init: function () {
-        console.log('Raycaster Manager initialized');
-        const leftController = document.querySelector('#left-hand');
-        const rightController = document.querySelector('#right-hand');
+        console.log("Raycaster Manager initialized");
+        const leftController = document.querySelector("#left-hand");
+        const rightController = document.querySelector("#right-hand");
         // Listen for trigger down events on both controllers
         if (leftController && rightController) {
-            leftController.addEventListener('triggerdown', () => this.toggleRaycaster('left'));
-            rightController.addEventListener('triggerdown', () => this.toggleRaycaster('right'));
+            leftController.addEventListener("triggerdown", () => this.toggleRaycaster("left"));
+            rightController.addEventListener("triggerdown", () => this.toggleRaycaster("right"));
         }
     },
     // Toggle logic for raycaster
     toggleRaycaster: function (hand) {
         const actualRay = document.querySelector(`#${hand}-hand .actual-ray`);
         // Check if the raycaster is already active on this controller
-        if (actualRay.getAttribute('raycaster').enabled) {
-            console.log('Raycaster already active on this controller:', hand);
+        if (actualRay.getAttribute("raycaster").enabled) {
+            console.log("Raycaster already active on this controller:", hand);
             // If not intersecting a interactable, disable it
             if (!actualRay.components.raycaster.intersectedEls.length) {
-                console.log('No intersection detected. Disabling raycaster on:', hand);
+                console.log("No intersection detected. Disabling raycaster on:", hand);
                 this.disableRaycaster(hand);
             }
         } else {
             // Enable and move the raycaster to this controller
-            console.log('Enabling raycaster on:', hand);
+            console.log("Enabling raycaster on:", hand);
             this.enableRaycaster(hand);
         }
     },
@@ -38,21 +38,21 @@ AFRAME.registerComponent('raycaster-manager', {
     disableRaycaster: function (hand) {
         const styledRay = document.querySelector(`#${hand}-hand .styled-ray`);
         const actualRay = document.querySelector(`#${hand}-hand .actual-ray`);
-        styledRay?.setAttribute('visible', false);
-        actualRay?.setAttribute('raycaster', 'enabled', false);
+        styledRay?.setAttribute("visible", false);
+        actualRay?.setAttribute("raycaster", "enabled", false);
     },
     // Enable raycaster
     enableRaycaster: function (hand) {
         const styledRay = document.querySelector(`#${hand}-hand .styled-ray`);
         const actualRay = document.querySelector(`#${hand}-hand .actual-ray`);
-        styledRay?.setAttribute('visible', true);
-        actualRay?.setAttribute('raycaster', { enabled: true });
+        styledRay?.setAttribute("visible", true);
+        actualRay?.setAttribute("raycaster", { enabled: true });
         // Play sound
         if (styledRay) {
             this.playSound(styledRay);
         }
         // Disable the other controller's raycaster
-        const otherHand = hand === 'left' ? 'right' : 'left';
+        const otherHand = hand === "left" ? "right" : "left";
         this.disableRaycaster(otherHand);
     },
     // Play sound
@@ -61,5 +61,5 @@ AFRAME.registerComponent('raycaster-manager', {
         if (soundComp) {
             soundComp.playSound();
         }
-    }
+    },
 });
