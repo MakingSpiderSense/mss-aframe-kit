@@ -6,6 +6,8 @@
 
 _Tested with A-Frame 1.7.0_
 
+**Have a headset? [Try it out in VR!](https://makingspidersense.github.io/mss-aframe-kit/arm-swing-movement/example.html)**
+
 ## Features
 
 - **Automatic Speed Calculation**: Translates step cadence into m/s using a linear regression model based on average adult walking speeds.

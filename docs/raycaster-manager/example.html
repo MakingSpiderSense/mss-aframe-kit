@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Raycaster Manager - Example</title>
-	<script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
+    <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
     <script src="https://unpkg.com/aframe-environment-component@1.5.x/dist/aframe-environment-component.min.js"></script><!-- Not important -->
     <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.5.4/dist/aframe-extras.min.js"></script><!-- Not important -->
-    <script src="raycaster-manager.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/MakingSpiderSense/mss-aframe-kit@main/src/components/raycaster-manager/raycaster-manager.js"></script>
 </head>
 
 <body>
@@ -22,10 +22,10 @@
         <!-- Box (will change color when user presses trigger) -->
         <a-box class="interactable" toggle-color position="0 1 4.5" color="red" width=".5" height=".5" depth=".5"></a-box>
 
-		<!-- User -->
-		<a-entity class="user" position="0 0 6" movement-controls="speed: .5;">
-			<!-- Camera -->
-			<a-entity camera look-controls="pointerLockEnabled: false" position="0 1.6 0" id="cameraRig"></a-entity>
+        <!-- User -->
+        <a-entity class="user" position="0 0 6" movement-controls="speed: .5;">
+            <!-- Camera -->
+            <a-entity camera look-controls="pointerLockEnabled: false" position="0 1.6 0" id="cameraRig"></a-entity>
             <!-- Controllers -->
             <a-entity class="controllers">
                 <a-entity id="left-hand" meta-touch-controls="hand: left">
