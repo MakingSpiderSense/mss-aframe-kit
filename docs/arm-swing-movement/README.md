@@ -6,7 +6,7 @@
 
 _Tested with A-Frame 1.7.0_
 
-**Have a headset? [Try it out in VR!](https://makingspidersense.github.io/mss-aframe-kit/raycaster-manager/example.html)**
+**Have a headset? [Try it out in VR!](https://makingspidersense.github.io/mss-aframe-kit/arm-swing-movement/example.html)**
 
 ## Features
 
