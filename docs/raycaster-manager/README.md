@@ -11,9 +11,11 @@
 
 _Tested with A-Frame 1.7.0._
 
-**View Demo**
+**[Watch Demo](https://www.youtube.com/watch?v=5M6M5AuEHZk)**
 
 [![View Demo](assets/demo-thumbnail.jpg)](https://www.youtube.com/watch?v=5M6M5AuEHZk)
+
+**Have a headset? [Try it out in VR!](https://makingspidersense.github.io/mss-aframe-kit/raycaster-manager/example.html)**
 
 ## Example Usage
 
