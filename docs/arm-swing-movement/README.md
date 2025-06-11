@@ -6,6 +6,10 @@
 
 _Tested with A-Frame 1.7.0_
 
+**[Watch Demo](https://www.youtube.com/watch?v=8FACeUliPiE)**
+
+[![View Demo](assets/demo-thumbnail.png)](https://www.youtube.com/watch?v=8FACeUliPiE)
+
 **Have a headset? [Try it out in VR!](https://makingspidersense.github.io/mss-aframe-kit/arm-swing-movement/example.html)**
 
 ## Features
