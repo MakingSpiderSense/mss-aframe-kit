@@ -1,4 +1,17 @@
-/* Music Player Component */
+/**
+ * Music Player Component
+ *
+ * Overview: A component that plays a shuffled playlist of songs, allowing control via VR controllers or keyboard input.
+ *
+ * Description: This component plays a series of audio files (such as MP3s) from a provided list of song names. If the list is empty, it attempts to load a playlist from `localStorage` under the key `musicPlayerSongs`. The songs are shuffled and played one by one, automatically advancing on song end or error. Playback starts after a user interaction (click or VR entry). Control is handled via the left controller's X button (pause/resume) and Y button (skip to next), as well as the Space bar (pause/resume) and N key (next song) on keyboard.
+ *
+ * To Do:
+ * - Add ability to disable controls.
+ * - Add ability to customize controls.
+ * - Add loop controls (disable loop, reshuffle on loop, loop original shuffle order).
+ * - Add ability to disable shuffle.
+ * - Allow user to specify a custom audio directory.
+ */
 AFRAME.registerComponent("music-player", {
     schema: { songs: { type: "array", default: [] } },
     init: function () {
