@@ -1,4 +1,4 @@
-/*! mss-aframe-kit v1.0.6 */
+/*! mss-aframe-kit v1.1.6 */
 (function(global, factory) {
   typeof exports === "object" && typeof module !== "undefined" ? factory(exports) : typeof define === "function" && define.amd ? define(["exports"], factory) : (global = typeof globalThis !== "undefined" ? globalThis : global || self, factory(global.MSSAFrameKit = {}));
 })(this, function(exports2) {
@@ -97,9 +97,7 @@
       // Base playback rate when moving at one step per second. Adjusts dynamically based on speed of steps.
     },
     init: function() {
-      if (!this.data.enabled) {
-        return;
-      }
+      if (!this.data.enabled) return;
       this.controllerArrows = [];
       const left = this.createControllerArrow("left");
       const right = this.createControllerArrow("right");
@@ -140,9 +138,7 @@
       this.moving = false;
     },
     tick: function(time, timeDelta) {
-      if (!this.data.enabled) {
-        return;
-      }
+      if (!this.data.enabled) return;
       this.timeSinceLastSample += timeDelta;
       if (this.timeSinceLastSample >= this.data.avgDirectionSampleInterval) {
         this.timeSinceLastSample -= this.data.avgDirectionSampleInterval;
@@ -400,12 +396,8 @@
     },
     onHitStart: function(evt) {
       const handEl = evt.detail.el.closest("[meta-touch-controls], [oculus-touch-controls], [hand-controls]");
-      if (!handEl) {
-        return;
-      }
-      if (this.isHeld) {
-        return;
-      }
+      if (!handEl) return;
+      if (this.isHeld) return;
       this.rayActive = true;
       this.holdingHand = handEl;
       this.holdingHand.removeEventListener("gripdown", this.onGripDown);
@@ -415,9 +407,7 @@
     },
     onHitEnd: function(evt) {
       const handEl = evt.detail.el.closest("[meta-touch-controls], [oculus-touch-controls], [hand-controls]");
-      if (!handEl) {
-        return;
-      }
+      if (!handEl) return;
       const handId = handEl.getAttribute("id") || handEl.object3D.uuid;
       const origin = handEl.object3D.getWorldPosition(new THREE.Vector3());
       const direction = new THREE.Vector3();
@@ -435,25 +425,25 @@
     onGripDown: function(evt) {
       const hasHoldableDynamicBody = this.el.hasAttribute("holdable-dynamic-body");
       const hasShapeComponents = Object.keys(this.el.components).some((key) => key.includes("shape__"));
-      if (this.isHeld) {
-        return;
-      }
+      if (this.isHeld) return;
       const handEl = evt.target.closest("[meta-touch-controls], [oculus-touch-controls], [hand-controls]");
-      if (!handEl) {
-        return;
-      }
+      if (!handEl) return;
       this.holdingHand = handEl;
       if (this.el.hasAttribute("dynamic-body")) {
-        this.savedPhysics = [{
-          type: "dynamic-body",
-          config: this.el.getAttribute("dynamic-body")
-        }];
+        this.savedPhysics = [
+          {
+            type: "dynamic-body",
+            config: this.el.getAttribute("dynamic-body")
+          }
+        ];
         this.el.removeAttribute("dynamic-body");
       } else if (this.el.hasAttribute("ammo-body")) {
-        this.savedPhysics = [{
-          type: "ammo-body",
-          config: this.el.getAttribute("ammo-body")
-        }];
+        this.savedPhysics = [
+          {
+            type: "ammo-body",
+            config: this.el.getAttribute("ammo-body")
+          }
+        ];
         this.el.removeAttribute("ammo-body");
       } else if (this.el.hasAttribute("body") || hasHoldableDynamicBody && hasShapeComponents) {
         const bodyAttributes = this.el.getAttribute("body");
@@ -466,10 +456,12 @@
         const bodyCylinderAxis = bodyAttributes ? bodyAttributes.cylinderAxis : "";
         this.savedPhysics = [];
         if (bodyType === "dynamic") {
-          this.savedPhysics = [{
-            type: "body",
-            config: { type: bodyType, shape: bodyShape, mass: bodyMass, linearDamping: bodyLinearDamping, angularDamping: bodyAngularDamping, sphereRadius: bodySphereRadius, cylinderAxis: bodyCylinderAxis }
-          }];
+          this.savedPhysics = [
+            {
+              type: "body",
+              config: { type: bodyType, shape: bodyShape, mass: bodyMass, linearDamping: bodyLinearDamping, angularDamping: bodyAngularDamping, sphereRadius: bodySphereRadius, cylinderAxis: bodyCylinderAxis }
+            }
+          ];
           this.el.removeAttribute("body");
         }
         const shapeComponents = this.el.components;
@@ -540,11 +532,7 @@
       if (this.data.rotation.x !== 0 || this.data.rotation.y !== 0 || this.data.rotation.z !== 0) {
         let customGrabRotationY = handType === "left" ? -this.data.rotation.y : this.data.rotation.y;
         let customGrabRotationZ = handType === "left" ? -this.data.rotation.z : this.data.rotation.z;
-        const euler = new THREE.Euler(
-          THREE.MathUtils.degToRad(this.data.rotation.x),
-          THREE.MathUtils.degToRad(customGrabRotationY),
-          THREE.MathUtils.degToRad(customGrabRotationZ)
-        );
+        const euler = new THREE.Euler(THREE.MathUtils.degToRad(this.data.rotation.x), THREE.MathUtils.degToRad(customGrabRotationY), THREE.MathUtils.degToRad(customGrabRotationZ));
         customGrabQuat = new THREE.Quaternion().setFromEuler(euler);
       } else {
         customGrabQuat = quat;
@@ -578,9 +566,7 @@
       this.el.object3D.updateMatrixWorld(true);
     },
     onGripUp: function(evt) {
-      if (!this.isHeld || !this.holdingHand) {
-        return;
-      }
+      if (!this.isHeld || !this.holdingHand) return;
       this.el.object3D.updateMatrixWorld(true);
       this.originalParent.object3D.attach(this.el.object3D);
       this.el.object3D.updateMatrixWorld(true);
@@ -664,7 +650,11 @@
     __proto__: null
   }, Symbol.toStringTag, { value: "Module" }));
   AFRAME.registerComponent("music-player", {
-    schema: { songs: { type: "array", default: [] } },
+    schema: {
+      songs: { type: "array", default: [] },
+      playOrder: { type: "string", default: "shuffle" }
+      // options: 'shuffle', 'alphabetical', 'listed'
+    },
     init: function() {
       const sceneEl = this.el.sceneEl;
       const leftController = document.querySelector("#left-hand");
@@ -698,7 +688,7 @@
         console.warn("No songs found for music-player");
         return;
       }
-      this.currentPlaylist = this.shuffle(this.data.songs.slice());
+      this.currentPlaylist = this.generatePlaylist(this.data.songs.slice());
       this.audio = new Audio();
       this.audio.addEventListener("ended", () => {
         this.playNextSong();
@@ -722,7 +712,7 @@
     },
     playNextSong: function() {
       if (this.currentPlaylist.length === 0) {
-        this.currentPlaylist = this.shuffle(this.data.songs.slice());
+        this.currentPlaylist = this.generatePlaylist(this.data.songs.slice());
         console.log("Playlist resetting");
       }
       let nextSong = this.currentPlaylist.pop();
@@ -756,6 +746,17 @@
         [array[i], array[j]] = [array[j], array[i]];
       }
       return array;
+    },
+    generatePlaylist: function(songs) {
+      switch (this.data.playOrder) {
+        case "alphabetical":
+          return songs.sort().reverse();
+        case "listed":
+          return songs.reverse();
+        case "shuffle":
+        default:
+          return this.shuffle(songs);
+      }
     }
   });
   const __vite_glob_0_4 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
