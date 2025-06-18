@@ -13,7 +13,10 @@
  * - Allow user to specify a custom audio directory.
  */
 AFRAME.registerComponent("music-player", {
-    schema: { songs: { type: "array", default: [] } },
+    schema: {
+        songs: { type: "array", default: [] },
+        shuffle: { type: "boolean", default: true },
+    },
     init: function () {
         const sceneEl = this.el.sceneEl;
         const leftController = document.querySelector("#left-hand");
@@ -50,7 +53,7 @@ AFRAME.registerComponent("music-player", {
             console.warn("No songs found for music-player");
             return;
         }
-        this.currentPlaylist = this.shuffle(this.data.songs.slice());
+        this.currentPlaylist = this.data.shuffle ? this.shuffle(this.data.songs.slice()) : this.data.songs.slice();
         this.audio = new Audio();
         this.audio.addEventListener("ended", () => {
             this.playNextSong();
@@ -76,7 +79,7 @@ AFRAME.registerComponent("music-player", {
     },
     playNextSong: function () {
         if (this.currentPlaylist.length === 0) {
-            this.currentPlaylist = this.shuffle(this.data.songs.slice());
+            this.currentPlaylist = this.data.shuffle ? this.shuffle(this.data.songs.slice()) : this.data.songs.slice();
             console.log("Playlist resetting");
         }
         let nextSong = this.currentPlaylist.pop();
