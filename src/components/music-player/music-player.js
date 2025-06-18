@@ -1,21 +1,20 @@
 /**
  * Music Player Component
  *
- * Overview: A component that plays a shuffled playlist of songs, allowing control via VR controllers or keyboard input.
+ * Overview: A component that plays a playlist of songs, allowing control via VR controllers or keyboard input.
  *
- * Description: This component plays a series of audio files (such as MP3s) from a provided list of song names. If the list is empty, it attempts to load a playlist from `localStorage` under the key `musicPlayerSongs`. The songs are shuffled and played one by one, automatically advancing on song end or error. Playback starts after a user interaction (click or VR entry). Control is handled via the left controller's X button (pause/resume) and Y button (skip to next), as well as the Space bar (pause/resume) and N key (next song) on keyboard.
+ * Description: This component plays a series of audio files (such as MP3s) from a provided list of song names. If the list is empty, it attempts to load a playlist from `localStorage` under the key `musicPlayerSongs`. The songs are played in a mode determined by `playOrder`, which can be 'shuffle' (random), 'alphabetical', or 'listed' (original order). Playback starts after a user interaction (click or VR entry). Control is handled via the left controller's X button (pause/resume) and Y button (skip to next), as well as the Space bar (pause/resume) and N key (next song) on keyboard.
  *
  * To Do:
  * - Add ability to disable controls.
  * - Add ability to customize controls.
  * - Add loop controls (disable loop, reshuffle on loop, loop original shuffle order).
- * - Add ability to disable shuffle.
  * - Allow user to specify a custom audio directory.
  */
 AFRAME.registerComponent("music-player", {
     schema: {
         songs: { type: "array", default: [] },
-        shuffle: { type: "boolean", default: true },
+        playOrder: { type: "string", default: "shuffle" }, // options: 'shuffle', 'alphabetical', 'listed'
     },
     init: function () {
         const sceneEl = this.el.sceneEl;
@@ -53,7 +52,7 @@ AFRAME.registerComponent("music-player", {
             console.warn("No songs found for music-player");
             return;
         }
-        this.currentPlaylist = this.data.shuffle ? this.shuffle(this.data.songs.slice()) : this.data.songs.slice();
+        this.currentPlaylist = this.generatePlaylist(this.data.songs.slice());
         this.audio = new Audio();
         this.audio.addEventListener("ended", () => {
             this.playNextSong();
@@ -79,7 +78,7 @@ AFRAME.registerComponent("music-player", {
     },
     playNextSong: function () {
         if (this.currentPlaylist.length === 0) {
-            this.currentPlaylist = this.data.shuffle ? this.shuffle(this.data.songs.slice()) : this.data.songs.slice();
+            this.currentPlaylist = this.generatePlaylist(this.data.songs.slice());
             console.log("Playlist resetting");
         }
         let nextSong = this.currentPlaylist.pop();
@@ -115,5 +114,16 @@ AFRAME.registerComponent("music-player", {
             [array[i], array[j]] = [array[j], array[i]];
         }
         return array;
+    },
+    generatePlaylist: function (songs) {
+        switch (this.data.playOrder) {
+            case "alphabetical":
+                return songs.sort().reverse();
+            case "listed":
+                return songs.reverse();
+            case "shuffle":
+            default:
+                return this.shuffle(songs);
+        }
     },
 });
