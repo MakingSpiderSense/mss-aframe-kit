@@ -15,6 +15,7 @@ AFRAME.registerComponent("music-player", {
     schema: {
         songs: { type: "array", default: [] },
         playOrder: { type: "string", default: "shuffle" }, // options: 'shuffle', 'alphabetical', 'listed'
+        controlsEnabled: { type: "boolean", default: true },
         togglePauseSelector: { type: "string", default: "#left-hand" },
         togglePauseBtn: { type: "string", default: "xbuttonup" },
         togglePauseKey: { type: "string", default: "Space" },
@@ -25,7 +26,7 @@ AFRAME.registerComponent("music-player", {
     init: function () {
         const sceneEl = this.el.sceneEl;
         // If controls are enabled, set up event listeners for controller and keyboard inputs
-        if (1 == 1) {
+        if (this.data.controlsEnabled) {
             // Toggle Pause Controller Button
             const pauseControllerEl = document.querySelector(this.data.togglePauseSelector);
             if (pauseControllerEl) {
