@@ -15,25 +15,21 @@ AFRAME.registerComponent("music-player", {
     schema: {
         songs: { type: "array", default: [] },
         playOrder: { type: "string", default: "shuffle" }, // options: 'shuffle', 'alphabetical', 'listed'
+        controlsEnabled: { type: "boolean", default: true },
+        togglePauseSelector: { type: "string", default: "#left-hand" },
+        togglePauseBtn: { type: "string", default: "xbuttonup" },
+        togglePauseKey: { type: "string", default: "Space" },
+        nextTrackSelector: { type: "string", default: "#left-hand" },
+        nextTrackBtn: { type: "string", default: "ybuttonup" },
+        nextTrackKey: { type: "string", default: "KeyN" },
     },
     init: function () {
         const sceneEl = this.el.sceneEl;
-        const leftController = document.querySelector("#left-hand");
-        // Error and return if no controller found
-        if (!leftController) {
-            console.error("No #left-hand controller found for music-player");
-            return;
+        // If controls are enabled, set up event listeners for controller and keyboard inputs
+        if (this.data.controlsEnabled) {
+            this.setupControllerListeners();
+            this.setupKeyboardListeners();
         }
-        leftController.addEventListener("xbuttonup", () => this.togglePause());
-        leftController.addEventListener("ybuttonup", () => this.nextTrack());
-        // Add togglePause with Space bar key and nextTrack with N key
-        document.addEventListener("keyup", (e) => {
-            if (e.code === "Space") {
-                this.togglePause();
-            } else if (e.code === "KeyN") {
-                this.nextTrack();
-            }
-        });
         // If no songs were provided via the component attribute, load from localStorage.
         if (this.data.songs.length === 0) {
             let storedSongs = localStorage.getItem("musicPlayerSongs");
@@ -84,12 +80,8 @@ AFRAME.registerComponent("music-player", {
         let nextSong = this.currentPlaylist.pop();
         // Remove any leading/trailing quotes individually
         nextSong = nextSong.trim();
-        if (nextSong.startsWith("'")) {
-            nextSong = nextSong.slice(1);
-        }
-        if (nextSong.endsWith("'")) {
-            nextSong = nextSong.slice(0, -1);
-        }
+        if (nextSong.startsWith("'")) nextSong = nextSong.slice(1);
+        if (nextSong.endsWith("'")) nextSong = nextSong.slice(0, -1);
         this.currentSong = nextSong;
         console.log("Playing: " + nextSong);
         // URL encode to handle spaces and special characters
@@ -125,5 +117,31 @@ AFRAME.registerComponent("music-player", {
             default:
                 return this.shuffle(songs);
         }
+    },
+    setupControllerListeners: function () {
+        // Toggle Pause Controller Button
+        const pauseControllerEl = document.querySelector(this.data.togglePauseSelector);
+        if (pauseControllerEl) {
+            pauseControllerEl.addEventListener(this.data.togglePauseBtn, () => this.togglePause());
+        } else {
+            console.warn("Controller not found:", this.data.togglePauseSelector);
+        }
+        // Next Track Controller Button
+        const nextControllerEl = document.querySelector(this.data.nextTrackSelector);
+        if (nextControllerEl) {
+            nextControllerEl.addEventListener(this.data.nextTrackBtn, () => this.nextTrack());
+        } else {
+            console.warn("Controller not found:", this.data.nextTrackSelector);
+        }
+    },
+    setupKeyboardListeners: function () {
+        // Keyboard Events
+        document.addEventListener("keyup", (e) => {
+            if (e.code === this.data.togglePauseKey) {
+                this.togglePause();
+            } else if (e.code === this.data.nextTrackKey) {
+                this.nextTrack();
+            }
+        });
     },
 });
