@@ -27,28 +27,8 @@ AFRAME.registerComponent("music-player", {
         const sceneEl = this.el.sceneEl;
         // If controls are enabled, set up event listeners for controller and keyboard inputs
         if (this.data.controlsEnabled) {
-            // Toggle Pause Controller Button
-            const pauseControllerEl = document.querySelector(this.data.togglePauseSelector);
-            if (pauseControllerEl) {
-                pauseControllerEl.addEventListener(this.data.togglePauseBtn, () => this.togglePause());
-            } else {
-                console.warn("Controller not found:", this.data.togglePauseSelector);
-            }
-            // Next Track Controller Button
-            const nextControllerEl = document.querySelector(this.data.nextTrackSelector);
-            if (nextControllerEl) {
-                nextControllerEl.addEventListener(this.data.nextTrackBtn, () => this.nextTrack());
-            } else {
-                console.warn("Controller not found:", this.data.nextTrackSelector);
-            }
-            // Keyboard Events
-            document.addEventListener("keyup", (e) => {
-                if (e.code === this.data.togglePauseKey) {
-                    this.togglePause();
-                } else if (e.code === this.data.nextTrackKey) {
-                    this.nextTrack();
-                }
-            });
+            this.setupControllerListeners();
+            this.setupKeyboardListeners();
         }
         // If no songs were provided via the component attribute, load from localStorage.
         if (this.data.songs.length === 0) {
@@ -137,5 +117,31 @@ AFRAME.registerComponent("music-player", {
             default:
                 return this.shuffle(songs);
         }
+    },
+    setupControllerListeners: function () {
+        // Toggle Pause Controller Button
+        const pauseControllerEl = document.querySelector(this.data.togglePauseSelector);
+        if (pauseControllerEl) {
+            pauseControllerEl.addEventListener(this.data.togglePauseBtn, () => this.togglePause());
+        } else {
+            console.warn("Controller not found:", this.data.togglePauseSelector);
+        }
+        // Next Track Controller Button
+        const nextControllerEl = document.querySelector(this.data.nextTrackSelector);
+        if (nextControllerEl) {
+            nextControllerEl.addEventListener(this.data.nextTrackBtn, () => this.nextTrack());
+        } else {
+            console.warn("Controller not found:", this.data.nextTrackSelector);
+        }
+    },
+    setupKeyboardListeners: function () {
+        // Keyboard Events
+        document.addEventListener("keyup", (e) => {
+            if (e.code === this.data.togglePauseKey) {
+                this.togglePause();
+            } else if (e.code === this.data.nextTrackKey) {
+                this.nextTrack();
+            }
+        });
     },
 });
