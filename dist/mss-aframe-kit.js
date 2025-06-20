@@ -1,4 +1,4 @@
-/*! mss-aframe-kit v1.1.6 */
+/*! mss-aframe-kit v1.2.6 */
 (function(global, factory) {
   typeof exports === "object" && typeof module !== "undefined" ? factory(exports) : typeof define === "function" && define.amd ? define(["exports"], factory) : (global = typeof globalThis !== "undefined" ? globalThis : global || self, factory(global.MSSAFrameKit = {}));
 })(this, function(exports2) {
@@ -652,25 +652,22 @@
   AFRAME.registerComponent("music-player", {
     schema: {
       songs: { type: "array", default: [] },
-      playOrder: { type: "string", default: "shuffle" }
+      playOrder: { type: "string", default: "shuffle" },
       // options: 'shuffle', 'alphabetical', 'listed'
+      controlsEnabled: { type: "boolean", default: true },
+      togglePauseSelector: { type: "string", default: "#left-hand" },
+      togglePauseBtn: { type: "string", default: "xbuttonup" },
+      togglePauseKey: { type: "string", default: "Space" },
+      nextTrackSelector: { type: "string", default: "#left-hand" },
+      nextTrackBtn: { type: "string", default: "ybuttonup" },
+      nextTrackKey: { type: "string", default: "KeyN" }
     },
     init: function() {
       const sceneEl = this.el.sceneEl;
-      const leftController = document.querySelector("#left-hand");
-      if (!leftController) {
-        console.error("No #left-hand controller found for music-player");
-        return;
+      if (this.data.controlsEnabled) {
+        this.setupControllerListeners();
+        this.setupKeyboardListeners();
       }
-      leftController.addEventListener("xbuttonup", () => this.togglePause());
-      leftController.addEventListener("ybuttonup", () => this.nextTrack());
-      document.addEventListener("keyup", (e) => {
-        if (e.code === "Space") {
-          this.togglePause();
-        } else if (e.code === "KeyN") {
-          this.nextTrack();
-        }
-      });
       if (this.data.songs.length === 0) {
         let storedSongs = localStorage.getItem("musicPlayerSongs");
         if (storedSongs) {
@@ -717,12 +714,8 @@
       }
       let nextSong = this.currentPlaylist.pop();
       nextSong = nextSong.trim();
-      if (nextSong.startsWith("'")) {
-        nextSong = nextSong.slice(1);
-      }
-      if (nextSong.endsWith("'")) {
-        nextSong = nextSong.slice(0, -1);
-      }
+      if (nextSong.startsWith("'")) nextSong = nextSong.slice(1);
+      if (nextSong.endsWith("'")) nextSong = nextSong.slice(0, -1);
       this.currentSong = nextSong;
       console.log("Playing: " + nextSong);
       this.audio.src = "assets/audio/music/" + encodeURI(nextSong);
@@ -757,6 +750,29 @@
         default:
           return this.shuffle(songs);
       }
+    },
+    setupControllerListeners: function() {
+      const pauseControllerEl = document.querySelector(this.data.togglePauseSelector);
+      if (pauseControllerEl) {
+        pauseControllerEl.addEventListener(this.data.togglePauseBtn, () => this.togglePause());
+      } else {
+        console.warn("Controller not found:", this.data.togglePauseSelector);
+      }
+      const nextControllerEl = document.querySelector(this.data.nextTrackSelector);
+      if (nextControllerEl) {
+        nextControllerEl.addEventListener(this.data.nextTrackBtn, () => this.nextTrack());
+      } else {
+        console.warn("Controller not found:", this.data.nextTrackSelector);
+      }
+    },
+    setupKeyboardListeners: function() {
+      document.addEventListener("keyup", (e) => {
+        if (e.code === this.data.togglePauseKey) {
+          this.togglePause();
+        } else if (e.code === this.data.nextTrackKey) {
+          this.nextTrack();
+        }
+      });
     }
   });
   const __vite_glob_0_4 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
