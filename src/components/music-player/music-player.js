@@ -6,13 +6,13 @@
  * Description: This component plays a series of audio files (such as MP3s) from a provided list of song names. If the list is empty, it attempts to load a playlist from `localStorage` under the key `musicPlayerSongs`. The songs are played in a mode determined by `playOrder`, which can be 'shuffle' (random), 'alphabetical', or 'listed' (original order). Playback starts after a user interaction (click or VR entry). Control is handled via the left controller's X button (pause/resume) and Y button (skip to next), as well as the Space bar (pause/resume) and N key (next song) on keyboard.
  *
  * To Do:
- * - Add loop controls (disable loop, reshuffle on loop, loop original shuffle order).
  * - Allow user to specify a custom audio directory.
  */
 AFRAME.registerComponent("music-player", {
     schema: {
         songs: { type: "array", default: [] },
         playOrder: { type: "string", default: "shuffle" }, // options: 'shuffle', 'alphabetical', 'listed'
+        loopMode: { type: "string", default: "maintain" }, // options: 'maintain', 'shuffle', 'disable'
         controlsEnabled: { type: "boolean", default: true },
         togglePauseSelector: { type: "string", default: "#left-hand" },
         togglePauseBtn: { type: "string", default: "xbuttonup" },
@@ -47,6 +47,7 @@ AFRAME.registerComponent("music-player", {
             return;
         }
         this.currentPlaylist = this.generatePlaylist(this.data.songs.slice());
+        this.originalPlaylist = this.currentPlaylist.slice(); // Store the original order for maintaining
         this.audio = new Audio();
         this.audio.addEventListener("ended", () => {
             this.playNextSong();
@@ -71,9 +72,18 @@ AFRAME.registerComponent("music-player", {
         this.playNextSong();
     },
     playNextSong: function () {
+        // Handle looping the playlist based on loopMode
         if (this.currentPlaylist.length === 0) {
-            this.currentPlaylist = this.generatePlaylist(this.data.songs.slice());
-            console.log("Playlist resetting");
+            // Don't loop if disabled "disable"
+            if (this.data.loopMode === "disable") {
+                return;
+            // Shuffle each time it resets
+            } else if (this.data.loopMode === "shuffle") {
+                this.currentPlaylist = this.shuffle(this.data.songs.slice());
+            // If "maintain" or fallback, keep the original shuffle order
+            } else {
+                this.currentPlaylist = this.originalPlaylist.slice();
+            }
         }
         let nextSong = this.currentPlaylist.pop();
         // Remove any leading/trailing quotes individually
