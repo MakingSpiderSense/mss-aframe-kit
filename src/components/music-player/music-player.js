@@ -84,7 +84,7 @@ AFRAME.registerComponent("music-player", {
             } else if (this.data.loopMode === "maintain") {
                 this.currentPlaylist = this.originalPlaylist.slice();
             } else {
-                console.warn(`Unexpected loopMode: ${this.data.loopMode}. Defaulting to 'maintain'.`);
+                console.warn(`Unexpected loopMode: "${this.data.loopMode}". Defaulting to "maintain".`);
                 this.currentPlaylist = this.originalPlaylist.slice();
             }
         }
