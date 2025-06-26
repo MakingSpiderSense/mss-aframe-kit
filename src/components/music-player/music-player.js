@@ -81,7 +81,10 @@ AFRAME.registerComponent("music-player", {
             } else if (this.data.loopMode === "shuffle") {
                 this.currentPlaylist = this.shuffle(this.data.songs.slice());
             // If "maintain" or fallback, keep the original shuffle order
+            } else if (this.data.loopMode === "maintain") {
+                this.currentPlaylist = this.originalPlaylist.slice();
             } else {
+                console.warn(`Unexpected loopMode: ${this.data.loopMode}. Defaulting to 'maintain'.`);
                 this.currentPlaylist = this.originalPlaylist.slice();
             }
         }
