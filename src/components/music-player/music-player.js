@@ -7,6 +7,7 @@
  *
  * To Do:
  * - Allow user to specify a custom audio directory.
+ * - Update docs description to include new options
  */
 AFRAME.registerComponent("music-player", {
     schema: {
