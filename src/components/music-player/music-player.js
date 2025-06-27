@@ -6,7 +6,6 @@
  * Description: This component plays a series of audio files (such as MP3s) from a provided list of song names. If the list is empty, it attempts to load a playlist from `localStorage` under the key `musicPlayerSongs`. The songs are played in a mode determined by `playOrder`, which can be 'shuffle' (random), 'alphabetical', or 'listed' (original order). Playback starts after a user interaction (click or VR entry). Control is handled via the left controller's X button (pause/resume) and Y button (skip to next), as well as the Space bar (pause/resume) and N key (next song) on keyboard.
  *
  * To Do:
- * - Allow user to specify a custom audio directory.
  * - Update docs description to include new options
  */
 AFRAME.registerComponent("music-player", {
@@ -14,6 +13,7 @@ AFRAME.registerComponent("music-player", {
         songs: { type: "array", default: [] },
         playOrder: { type: "string", default: "shuffle" }, // options: 'shuffle', 'alphabetical', 'listed'
         loopMode: { type: "string", default: "maintain" }, // options: 'maintain', 'shuffle', 'disable'
+        audioDirectory: { type: "string", default: "assets/audio/music/" },
         controlsEnabled: { type: "boolean", default: true },
         togglePauseSelector: { type: "string", default: "#left-hand" },
         togglePauseBtn: { type: "string", default: "xbuttonup" },
@@ -97,7 +97,7 @@ AFRAME.registerComponent("music-player", {
         this.currentSong = nextSong;
         console.log("Playing: " + nextSong);
         // URL encode to handle spaces and special characters
-        this.audio.src = "assets/audio/music/" + encodeURI(nextSong);
+        this.audio.src = this.data.audioDirectory + encodeURI(nextSong);
         this.audio.play();
     },
     // Toggle pause/resume
