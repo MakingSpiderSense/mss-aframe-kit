@@ -2,25 +2,20 @@
  * Music Player Component
  *
  * Overview: A component that plays a playlist of songs, allowing control via VR controllers or keyboard input.
- *
- * Description: This component plays a series of audio files (such as MP3s) from a provided list of song names. If the list is empty, it attempts to load a playlist from `localStorage` under the key `musicPlayerSongs`. The songs are played in a mode determined by `playOrder`, which can be 'shuffle' (random), 'alphabetical', or 'listed' (original order). Playback starts after a user interaction (click or VR entry). Control is handled via the left controller's X button (pause/resume) and Y button (skip to next), as well as the Space bar (pause/resume) and N key (next song) on keyboard.
- *
- * To Do:
- * - Update docs description to include new options
  */
 AFRAME.registerComponent("music-player", {
     schema: {
-        songs: { type: "array", default: [] },
+        songs: { type: "array", default: [] }, // Array of song names (e.g., ["song1.mp3", "song2.mp3"])
         playOrder: { type: "string", default: "shuffle" }, // options: 'shuffle', 'alphabetical', 'listed'
         loopMode: { type: "string", default: "maintain" }, // options: 'maintain', 'shuffle', 'disable'
-        audioDirectory: { type: "string", default: "assets/audio/music/" },
-        controlsEnabled: { type: "boolean", default: true },
-        togglePauseSelector: { type: "string", default: "#left-hand" },
-        togglePauseBtn: { type: "string", default: "xbuttonup" },
-        togglePauseKey: { type: "string", default: "Space" },
-        nextTrackSelector: { type: "string", default: "#left-hand" },
-        nextTrackBtn: { type: "string", default: "ybuttonup" },
-        nextTrackKey: { type: "string", default: "KeyN" },
+        audioDirectory: { type: "string", default: "assets/audio/music/" }, // Directory where audio files are stored
+        controlsEnabled: { type: "boolean", default: true }, // Enable/disable controller and keyboard controls
+        togglePauseSelector: { type: "string", default: "#left-hand" }, // Selector for the controller element for toggling pause
+        togglePauseBtn: { type: "string", default: "xbuttonup" }, // Button to toggle pause on the controller
+        togglePauseKey: { type: "string", default: "Space" }, // Key to toggle pause on the keyboard
+        nextTrackSelector: { type: "string", default: "#left-hand" }, // Selector for the controller element for next track
+        nextTrackBtn: { type: "string", default: "ybuttonup" }, // Button to skip to the next track on the controller
+        nextTrackKey: { type: "string", default: "KeyN" }, // Key to skip to the next track on the keyboard
     },
     init: function () {
         const sceneEl = this.el.sceneEl;
@@ -29,7 +24,7 @@ AFRAME.registerComponent("music-player", {
             this.setupControllerListeners();
             this.setupKeyboardListeners();
         }
-        // If no songs were provided via the component attribute, load from localStorage.
+        // If no songs were provided via the component attribute, load from localStorage
         if (this.data.songs.length === 0) {
             let storedSongs = localStorage.getItem("musicPlayerSongs");
             if (storedSongs) {
