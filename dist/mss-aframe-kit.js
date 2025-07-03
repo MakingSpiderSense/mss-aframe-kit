@@ -1,4 +1,4 @@
-/*! mss-aframe-kit v1.2.6 */
+/*! mss-aframe-kit v1.3.0 */
 (function(global, factory) {
   typeof exports === "object" && typeof module !== "undefined" ? factory(exports) : typeof define === "function" && define.amd ? define(["exports"], factory) : (global = typeof globalThis !== "undefined" ? globalThis : global || self, factory(global.MSSAFrameKit = {}));
 })(this, function(exports2) {
@@ -652,15 +652,27 @@
   AFRAME.registerComponent("music-player", {
     schema: {
       songs: { type: "array", default: [] },
+      // Array of song names (e.g., ["song1.mp3", "song2.mp3"])
       playOrder: { type: "string", default: "shuffle" },
       // options: 'shuffle', 'alphabetical', 'listed'
+      loopMode: { type: "string", default: "maintain" },
+      // options: 'maintain', 'shuffle', 'disable'
+      audioDirectory: { type: "string", default: "assets/audio/music/" },
+      // Directory where audio files are stored
       controlsEnabled: { type: "boolean", default: true },
+      // Enable/disable controller and keyboard controls
       togglePauseSelector: { type: "string", default: "#left-hand" },
+      // Selector for the controller element for toggling pause
       togglePauseBtn: { type: "string", default: "xbuttonup" },
+      // Button to toggle pause on the controller
       togglePauseKey: { type: "string", default: "Space" },
+      // Key to toggle pause on the keyboard
       nextTrackSelector: { type: "string", default: "#left-hand" },
+      // Selector for the controller element for next track
       nextTrackBtn: { type: "string", default: "ybuttonup" },
+      // Button to skip to the next track on the controller
       nextTrackKey: { type: "string", default: "KeyN" }
+      // Key to skip to the next track on the keyboard
     },
     init: function() {
       const sceneEl = this.el.sceneEl;
@@ -686,6 +698,7 @@
         return;
       }
       this.currentPlaylist = this.generatePlaylist(this.data.songs.slice());
+      this.originalPlaylist = this.currentPlaylist.slice();
       this.audio = new Audio();
       this.audio.addEventListener("ended", () => {
         this.playNextSong();
@@ -709,8 +722,16 @@
     },
     playNextSong: function() {
       if (this.currentPlaylist.length === 0) {
-        this.currentPlaylist = this.generatePlaylist(this.data.songs.slice());
-        console.log("Playlist resetting");
+        if (this.data.loopMode === "disable") {
+          return;
+        } else if (this.data.loopMode === "shuffle") {
+          this.currentPlaylist = this.shuffle(this.data.songs.slice());
+        } else if (this.data.loopMode === "maintain") {
+          this.currentPlaylist = this.originalPlaylist.slice();
+        } else {
+          console.warn(`Unexpected loopMode: "${this.data.loopMode}". Defaulting to "maintain".`);
+          this.currentPlaylist = this.originalPlaylist.slice();
+        }
       }
       let nextSong = this.currentPlaylist.pop();
       nextSong = nextSong.trim();
@@ -718,7 +739,7 @@
       if (nextSong.endsWith("'")) nextSong = nextSong.slice(0, -1);
       this.currentSong = nextSong;
       console.log("Playing: " + nextSong);
-      this.audio.src = "assets/audio/music/" + encodeURI(nextSong);
+      this.audio.src = this.data.audioDirectory + encodeURI(nextSong);
       this.audio.play();
     },
     // Toggle pause/resume
