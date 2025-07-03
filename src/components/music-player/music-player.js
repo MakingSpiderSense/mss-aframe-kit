@@ -1,7 +1,7 @@
 /**
  * Music Player Component
  *
- * Overview: A component that plays a playlist of songs, allowing control via VR controllers or keyboard input.
+ * Overview: A component that plays a playlist of songs, allowing control via VR controllers or keyboard input. See `docs/music-player/README.md` for more details.
  */
 AFRAME.registerComponent("music-player", {
     schema: {
