@@ -65,6 +65,11 @@ AFRAME.registerComponent("holdable", {
         const handEl = evt.detail.el.closest("[meta-touch-controls], [oculus-touch-controls], [hand-controls]");
         if (!handEl) return;
         if (this.isHeld) return;
+        // Emit hit-start event with details
+        this.el.emit("hit-start", {
+            hand: handEl,
+            entity: this.el,
+        });
         this.rayActive = true;
         this.holdingHand = handEl;
         // Remove and event listeners to prevent multiple event listeners
