@@ -65,6 +65,11 @@ AFRAME.registerComponent("holdable", {
         const handEl = evt.detail.el.closest("[meta-touch-controls], [oculus-touch-controls], [hand-controls]");
         if (!handEl) return;
         if (this.isHeld) return;
+        // Emit hit-start event with details
+        this.el.emit("hit-start", {
+            hand: handEl,
+            entity: this.el,
+        });
         this.rayActive = true;
         this.holdingHand = handEl;
         // Remove and event listeners to prevent multiple event listeners
@@ -77,6 +82,11 @@ AFRAME.registerComponent("holdable", {
     onHitEnd: function (evt) {
         const handEl = evt.detail.el.closest("[meta-touch-controls], [oculus-touch-controls], [hand-controls]");
         if (!handEl) return;
+        // Emit hit-end event with details
+        this.el.emit("hit-end", {
+            hand: handEl,
+            entity: this.el,
+        });
         // Get a unique identifier for the hand; prefer the id attribute, or fallback to the object's uuid.
         const handId = handEl.getAttribute("id") || handEl.object3D.uuid;
         // Perform the inside-mesh test:
@@ -102,6 +112,11 @@ AFRAME.registerComponent("holdable", {
         if (this.isHeld) return;
         const handEl = evt.target.closest("[meta-touch-controls], [oculus-touch-controls], [hand-controls]");
         if (!handEl) return;
+        // Emit grip-down event with details
+        this.el.emit("grip-down", {
+            hand: handEl,
+            entity: this.el,
+        });
         this.holdingHand = handEl;
         // Save physics attributes if they exist.
         if (this.el.hasAttribute("dynamic-body")) {
@@ -270,6 +285,11 @@ AFRAME.registerComponent("holdable", {
     },
     onGripUp: function (evt) {
         if (!this.isHeld || !this.holdingHand) return;
+        // Emit grip-up event with details
+        this.el.emit("grip-up", {
+            hand: this.holdingHand,
+            entity: this.el,
+        });
         this.el.object3D.updateMatrixWorld(true);
         // Reparent back to the original parent.
         this.originalParent.object3D.attach(this.el.object3D);
