@@ -10,11 +10,26 @@ AFRAME.registerComponent("refresh-raycaster-on-model-load", {
             // console.log(`Checking if all models loaded: ${loadedModels}/${modelsToLoad}`); // 🐞
             if (loadedModels === modelsToLoad) {
                 refreshRaycasters();
+                refreshPhysicsBodies();
             }
         };
         const refreshRaycasters = () => {
             document.querySelectorAll("[raycaster]").forEach((ray) => {
                 ray.components.raycaster.refreshObjects();
+            });
+        };
+        const refreshPhysicsBodies = () => {
+            // Refresh dynamic bodies
+            document.querySelectorAll("[delayed-dynamic-body]").forEach((el) => {
+                const config = el.getAttribute("delayed-dynamic-body"); // Save config
+                el.removeAttribute("delayed-dynamic-body"); // Remove the placeholder attribute
+                el.setAttribute("dynamic-body", config); // Re-add it to refresh
+            });
+            // Refresh static bodies
+            document.querySelectorAll("[delayed-static-body]").forEach((el) => {
+                const config = el.getAttribute("delayed-static-body"); // Save config
+                el.removeAttribute("delayed-static-body"); // Remove the placeholder attribute
+                el.setAttribute("static-body", config); // Re-add it to refresh
             });
         };
         // If all models are already loaded, refresh immediately
@@ -29,8 +44,9 @@ AFRAME.registerComponent("refresh-raycaster-on-model-load", {
         // Force refresh if models don't load within 5 seconds
         setTimeout(() => {
             if (loadedModels < modelsToLoad) {
-                console.warn(`Not all models loaded after 5 seconds (${loadedModels}/${modelsToLoad}). Forcing raycaster refresh anyway.`);
+                console.warn(`Not all models loaded after 5 seconds (${loadedModels}/${modelsToLoad}). Forcing refresh anyway.`);
                 refreshRaycasters();
+                refreshPhysicsBodies();
             }
         }, 5000);
     },
