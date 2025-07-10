@@ -1,4 +1,8 @@
 AFRAME.registerComponent("post-model-load-refresh", {
+    schema: {
+        refreshRaycasters: {type: 'boolean', default: true},
+        refreshPhysics: {type: 'boolean', default: true}
+    },
     init: function () {
         /**
          * Refreshes everything once all models have loaded.
@@ -6,8 +10,8 @@ AFRAME.registerComponent("post-model-load-refresh", {
         const checkAllLoaded = () => {
             // console.log(`Checking if all models loaded: ${loadedModels}/${modelsToLoad}`); // 🐞
             if (loadedModels === modelsToLoad) {
-                refreshRaycasters();
-                refreshPhysicsBodies();
+                if (this.data.refreshRaycasters) refreshRaycasters();
+                if (this.data.refreshPhysics) refreshPhysicsBodies();
             }
         };
 
@@ -57,8 +61,8 @@ AFRAME.registerComponent("post-model-load-refresh", {
         setTimeout(() => {
             if (loadedModels < modelsToLoad) {
                 console.warn(`Not all models loaded after 5 seconds (${loadedModels}/${modelsToLoad}). Forcing refresh anyway.`);
-                refreshRaycasters();
-                refreshPhysicsBodies();
+                if (this.data.refreshRaycasters) refreshRaycasters();
+                if (this.data.refreshPhysics) refreshPhysicsBodies();
             }
         }, 5000);
     },
