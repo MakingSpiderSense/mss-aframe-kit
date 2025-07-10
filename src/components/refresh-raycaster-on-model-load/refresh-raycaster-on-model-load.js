@@ -1,11 +1,8 @@
 AFRAME.registerComponent("refresh-raycaster-on-model-load", {
     init: function () {
-        const models = document.querySelectorAll("[gltf-model]:not(a-mixin)");
-        // console.log({ models }); // 🐞
-        // Get array of models that have already loaded
-        let loadedModels = Array.from(models).filter((el) => el.components?.["gltf-model"]?.model).length;
-        const modelsToLoad = models.length;
-        // Function to check if all models have loaded and refresh raycasters
+        /**
+         * Refreshes everything once all models have loaded.
+         */
         const checkAllLoaded = () => {
             // console.log(`Checking if all models loaded: ${loadedModels}/${modelsToLoad}`); // 🐞
             if (loadedModels === modelsToLoad) {
@@ -13,11 +10,19 @@ AFRAME.registerComponent("refresh-raycaster-on-model-load", {
                 refreshPhysicsBodies();
             }
         };
+
+        /**
+         * Refreshes all raycasters in the scene.
+         */
         const refreshRaycasters = () => {
             document.querySelectorAll("[raycaster]").forEach((ray) => {
                 ray.components.raycaster.refreshObjects();
             });
         };
+
+        /**
+         * Refreshes all placeholder physics bodies in the scene ("delayed-dynamic-body" and "delayed-static-body").
+         */
         const refreshPhysicsBodies = () => {
             // Refresh dynamic bodies
             document.querySelectorAll("[delayed-dynamic-body]").forEach((el) => {
@@ -32,6 +37,13 @@ AFRAME.registerComponent("refresh-raycaster-on-model-load", {
                 el.setAttribute("static-body", config); // Re-add it to refresh
             });
         };
+
+        // Get all models in the scene that have a gltf-model component
+        const models = document.querySelectorAll("[gltf-model]:not(a-mixin)");
+        // console.log({ models }); // 🐞
+        // Get array of models that have already loaded
+        let loadedModels = Array.from(models).filter((el) => el.components?.["gltf-model"]?.model).length;
+        const modelsToLoad = models.length;
         // If all models are already loaded, refresh immediately
         checkAllLoaded();
         // Listen for remaining models to load
