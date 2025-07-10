@@ -8,6 +8,7 @@
  * Notes:
  * - If using local-computed, using "0 0 0" for position or rotation will indicate no custom position or rotation. For rotation, this means the rotation will be the same as the object's original rotation when grabbed.
  * - Tip: You don't actually need to add the intersection class to the entity, as the holdable component will add it automatically if it is not already present. However, you can add it manually if you want to use the intersection class for other purposes.
+ * - Tip: If using models with textures, it's recommended to include the `post-model-load-refresh` component on the scene to ensure raycasters and physics bodies are refreshed after all models have loaded.
  * - Rare: If you want to use another class for raycaster intersections instead of "interactable", you can add it globally to the scene using `data-holdable-intersection-class="your-class"`. This will be used for all holdable objects unless overridden.
  *
  * Limitations:
