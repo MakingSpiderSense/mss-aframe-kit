@@ -1,4 +1,4 @@
-AFRAME.registerComponent("refresh-raycaster-on-model-load", {
+AFRAME.registerComponent("post-model-load-refresh", {
     init: function () {
         /**
          * Refreshes everything once all models have loaded.
