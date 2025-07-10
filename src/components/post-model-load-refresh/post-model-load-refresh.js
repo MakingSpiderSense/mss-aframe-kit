@@ -1,3 +1,8 @@
+/**
+ * Refreshes raycasters and physics bodies after all models have loaded.
+ *
+ * This was created because when models have textures, there appears to be a race condition due to them taking longer to load, which causes raycasters and physics bodies to not be assigned properly. This fixes that issue by waiting for all models to load before first.
+ */
 AFRAME.registerComponent("post-model-load-refresh", {
     schema: {
         refreshRaycasters: {type: 'boolean', default: true},
