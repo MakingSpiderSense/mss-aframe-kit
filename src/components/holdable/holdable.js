@@ -3,12 +3,12 @@
  *
  * Overview: A component that allows an object to be picked up and held by a controller.
  *
- * Description: This component makes an object “holdable” by VR controllers using raycaster events targeted at objects with the “interactable” class. When the controller’s ray intersects the object, it listens for grip events. On grip down, the component saves any physics settings and re-parents the object to the controller, aligning it based on a local-custom position/rotation (from its schema) or a global default provided by a scene attribute (like `data-grab-position="0 0 0"`). Rotation pivots around the controller, not the model's center. It's easiest to set the custom rotation before position. If local-custom or global positions are not set, it defaults to where it was actually grabbed (local-computed). On grip up, it restores the original physics and parent. If the object has a `holdable-dynamic-body` attribute, it applies dynamic-body properties after release, even if the object was previously static.
- *
- * To Do: Add support for custom raycaster intersection classes, rather than using the “interactable” class.
+ * Description: This component makes an object "holdable" by VR controllers using raycaster events targeted at objects with the specified intersection class (defaults to "interactable"). When the controller's ray intersects the object, it listens for grip events. On grip down, the component saves any physics settings and re-parents the object to the controller, aligning it based on a local-custom position/rotation (from its schema) or a global default provided by a scene attribute (like `data-holdable-grab-position="0 0 0"`). Rotation pivots around the controller, not the model's center. It's easiest to set the custom rotation before position. If local-custom or global positions are not set, it defaults to where it was actually grabbed (local-computed). On grip up, it restores the original physics and parent. If the object has a `holdable-dynamic-body` attribute, it applies dynamic-body properties after release, even if the object was previously static.
  *
  * Notes:
  * - If using local-computed, using "0 0 0" for position or rotation will indicate no custom position or rotation. For rotation, this means the rotation will be the same as the object's original rotation when grabbed.
+ * - Tip: You don't actually need to add the intersection class to the entity, as the holdable component will add it automatically if it is not already present. However, you can add it manually if you want to use the intersection class for other purposes.
+ * - Rare: If you want to use another class for raycaster intersections instead of "interactable", you can add it globally to the scene using `data-holdable-intersection-class="your-class"`. This will be used for all holdable objects unless overridden.
  *
  * Limitations:
  * - While there is some code in here showing support for the ammo.js driver, it is not working correctly. After release, collisions no longer work.
@@ -40,9 +40,15 @@ AFRAME.registerComponent("holdable", {
         this.el.addEventListener("raycaster-intersected", this.onHitStart);
         this.el.addEventListener("raycaster-intersected-cleared", this.onHitEnd);
         this.physicsDriver = this.el.sceneEl.getAttribute("physics");
-        // If the "interactable" class is not already on the entity, add it
-        if (!this.el.classList.contains("interactable")) {
-            this.el.classList.add("interactable");
+        // Determine which intersection class to use from scene attribute, or use default
+        let intersectionClass = "interactable"; // Default
+        const sceneIntersectionClass = this.el.sceneEl.getAttribute("data-holdable-intersection-class");
+        if (sceneIntersectionClass) {
+            intersectionClass = sceneIntersectionClass;
+        }
+        // If the specified intersection class is not already on the entity, add it
+        if (!this.el.classList.contains(intersectionClass)) {
+            this.el.classList.add(intersectionClass);
         }
     },
     tick: function (time, delta) {
@@ -224,7 +230,7 @@ AFRAME.registerComponent("holdable", {
             useCustomPos = true;
         } else {
             // Check for a global default on the a-scene.
-            const sceneGrabPosAttr = this.el.sceneEl.getAttribute("data-grab-position");
+            const sceneGrabPosAttr = this.el.sceneEl.getAttribute("data-holdable-grab-position");
             if (sceneGrabPosAttr) {
                 customGrabPos = new THREE.Vector3().copy(AFRAME.utils.coordinates.parse(sceneGrabPosAttr));
                 customGrabPos.x = handType === "left" ? -customGrabPos.x : customGrabPos.x;
