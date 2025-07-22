@@ -26,10 +26,12 @@ Add the `holdable` component to an entity you'd like to make grabbable, such as 
 
 ## Properties
 
-| Parameter | Type | Description                                                             | Default | Options                                             |
-| --------- | ---- | ----------------------------------------------------------------------- | ------- | --------------------------------------------------- |
-| position  | vec3 | Local offset position (from controller) where the object should be held | `0 0 0` | Any position coordinates relative to the controller |
-| rotation  | vec3 | Local offset rotation applied when held. Y/Z auto-flips for left hand   | `0 0 0` | Any rotation coordinates relative to the controller |
+| Parameter | Type | Description                                                                       | Default | Options                          |
+| --------- | ---- | --------------------------------------------------------------------------------- | ------- | -------------------------------- |
+| position  | vec3 | Local offset position where the object should be held (relative to controller).   | `0 0 0` | Any position coordinates         |
+| rotation  | vec3 | Local offset rotation applied when held (relative to controller).                 | `0 0 0` | Any rotation angles (in degrees) |
+
+**Note**: Left-hand interactions are mirrored - position and rotation offsets are automatically flipped when grabbing with the left hand.
 
 ## Behavior & Features
 
@@ -47,7 +49,6 @@ Add the `holdable` component to an entity you'd like to make grabbable, such as 
 
 - You don't need to manually add the intersection class (`.interactable`)—`holdable` adds it automatically.
 - It's recommended to use the `post-model-load-refresh` component (part of `mss-aframe-kit`) if working with GLTF models to ensure raycasters and physics bodies are refreshed post-load.
-- Left-hand interactions are mirrored: position and rotation offsets are automatically adjusted when grabbing with the left hand.
 
 ## Limitations
 
