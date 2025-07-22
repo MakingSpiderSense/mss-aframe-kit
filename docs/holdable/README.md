@@ -4,7 +4,7 @@
 
 The `holdable` component allows entities in A-Frame VR scenes to be picked up, held, and released using hand controllers with raycasters. It supports dynamic positioning and rotation offsets, automatic physics handling during grab and release, and custom collision shape preservation.
 
-This component is ideal for VR scenes where users interact with virtual objects—such as picking up tools, throwing props, or manipulating items in a puzzle or simulation.
+This component is ideal for VR scenes where users interact with objects, such as picking up tools, throwing props, or manipulating items in a puzzle or simulation.
 
 _Tested with A-Frame 1.7.0_
 
