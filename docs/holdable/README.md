@@ -6,6 +6,8 @@ The `holdable` component allows entities in A-Frame VR scenes to be picked up, h
 
 This component is ideal for VR scenes where users interact with virtual objects—such as picking up tools, throwing props, or manipulating items in a puzzle or simulation.
 
+_Tested with A-Frame 1.7.0_
+
 ## Basic Usage
 
 Add the `holdable` component to an entity you'd like to make grabbable, such as a model or primitive geometry. Optionally provide local position and rotation offsets:
