@@ -52,6 +52,13 @@ Add the `holdable` component to an entity you'd like to make grabbable, such as 
 - You don't need to manually add the intersection class (`.interactable`)—`holdable` adds it automatically.
 - It's recommended to use the `post-model-load-refresh` component (part of `mss-aframe-kit`) if working with GLTF models to ensure raycasters and physics bodies are refreshed post-load.
 
+## Advanced Usage
+
+- **Intersection Class Customization:** Use `data-holdable-intersection-class` on `<a-scene>` to change the default `.interactable` class used for raycaster targeting.
+- **Custom Shape Collision Support:** Preserves and restores multiple `shape__*` components with their configs ([Learn More](https://github.com/c-frame/aframe-physics-system/blob/master/CannonDriver.md#shape)).
+- **Supports Sleepy Physics Objects:** The `sleepy` component from the `aframe-physics-extras` library can be used to reduce jitter for objects that are stacked ([Learn More](https://github.com/wmurphyrd/aframe-physics-extras?tab=readme-ov-file#sleepy)).
+- **Dynamic Body Handling:** If `holdable-dynamic-body` attribute is added to model entity, adds `dynamic-body` on release. This way, it could be a `static-body` or have no physics initially (perfect for something like a hanging picture frame). The `holdable-dynamic-body` can accept additional properties that `dynamic-body` uses, like `mass`, `linearDamping`, etc., to customize the physics behavior when the object is grabbed.
+
 ## Limitations
 
 - **No Two-Hand Support:** Only one controller can hold an object at a time.
