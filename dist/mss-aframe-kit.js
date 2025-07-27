@@ -332,28 +332,6 @@
   const __vite_glob_0_1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
     __proto__: null
   }, Symbol.toStringTag, { value: "Module" }));
-  AFRAME.registerComponent("delayed-dynamic-body", {
-    schema: {
-      delay: { type: "number", default: 2e3 }
-      // delay in milliseconds
-    },
-    init: function() {
-      const sceneEl = this.el.sceneEl;
-      const addBody = () => {
-        setTimeout(() => {
-          this.el.setAttribute("dynamic-body", "");
-        }, this.data.delay);
-      };
-      if (sceneEl.hasLoaded) {
-        addBody();
-      } else {
-        sceneEl.addEventListener("loaded", addBody);
-      }
-    }
-  });
-  const __vite_glob_0_2 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
-    __proto__: null
-  }, Symbol.toStringTag, { value: "Module" }));
   AFRAME.registerComponent("holdable", {
     schema: {
       position: { type: "vec3", default: { x: 0, y: 0, z: 0 } },
@@ -380,8 +358,13 @@
       this.el.addEventListener("raycaster-intersected", this.onHitStart);
       this.el.addEventListener("raycaster-intersected-cleared", this.onHitEnd);
       this.physicsDriver = this.el.sceneEl.getAttribute("physics");
-      if (!this.el.classList.contains("interactable")) {
-        this.el.classList.add("interactable");
+      let intersectionClass = "interactable";
+      const sceneIntersectionClass = this.el.sceneEl.getAttribute("data-holdable-intersection-class");
+      if (sceneIntersectionClass) {
+        intersectionClass = sceneIntersectionClass;
+      }
+      if (!this.el.classList.contains(intersectionClass)) {
+        this.el.classList.add(intersectionClass);
       }
     },
     tick: function(time, delta) {
@@ -398,6 +381,10 @@
       const handEl = evt.detail.el.closest("[meta-touch-controls], [oculus-touch-controls], [hand-controls]");
       if (!handEl) return;
       if (this.isHeld) return;
+      this.el.emit("hit-start", {
+        hand: handEl,
+        entity: this.el
+      });
       this.rayActive = true;
       this.holdingHand = handEl;
       this.holdingHand.removeEventListener("gripdown", this.onGripDown);
@@ -408,6 +395,10 @@
     onHitEnd: function(evt) {
       const handEl = evt.detail.el.closest("[meta-touch-controls], [oculus-touch-controls], [hand-controls]");
       if (!handEl) return;
+      this.el.emit("hit-end", {
+        hand: handEl,
+        entity: this.el
+      });
       const handId = handEl.getAttribute("id") || handEl.object3D.uuid;
       const origin = handEl.object3D.getWorldPosition(new THREE.Vector3());
       const direction = new THREE.Vector3();
@@ -428,6 +419,10 @@
       if (this.isHeld) return;
       const handEl = evt.target.closest("[meta-touch-controls], [oculus-touch-controls], [hand-controls]");
       if (!handEl) return;
+      this.el.emit("grip-down", {
+        hand: handEl,
+        entity: this.el
+      });
       this.holdingHand = handEl;
       if (this.el.hasAttribute("dynamic-body")) {
         this.savedPhysics = [
@@ -517,7 +512,7 @@
         customGrabPos.x = handType === "left" ? -customGrabPos.x : customGrabPos.x;
         useCustomPos = true;
       } else {
-        const sceneGrabPosAttr = this.el.sceneEl.getAttribute("data-grab-position");
+        const sceneGrabPosAttr = this.el.sceneEl.getAttribute("data-holdable-grab-position");
         if (sceneGrabPosAttr) {
           customGrabPos = new THREE.Vector3().copy(AFRAME.utils.coordinates.parse(sceneGrabPosAttr));
           customGrabPos.x = handType === "left" ? -customGrabPos.x : customGrabPos.x;
@@ -567,6 +562,10 @@
     },
     onGripUp: function(evt) {
       if (!this.isHeld || !this.holdingHand) return;
+      this.el.emit("grip-up", {
+        hand: this.holdingHand,
+        entity: this.el
+      });
       this.el.object3D.updateMatrixWorld(true);
       this.originalParent.object3D.attach(this.el.object3D);
       this.el.object3D.updateMatrixWorld(true);
@@ -646,7 +645,7 @@
       }
     }
   });
-  const __vite_glob_0_3 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  const __vite_glob_0_2 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
     __proto__: null
   }, Symbol.toStringTag, { value: "Module" }));
   AFRAME.registerComponent("music-player", {
@@ -796,6 +795,60 @@
       });
     }
   });
+  const __vite_glob_0_3 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+    __proto__: null
+  }, Symbol.toStringTag, { value: "Module" }));
+  AFRAME.registerComponent("post-model-load-refresh", {
+    schema: {
+      refreshRaycasters: { type: "boolean", default: true },
+      refreshPhysics: { type: "boolean", default: true }
+    },
+    init: function() {
+      const checkAllLoaded = () => {
+        if (loadedModels === modelsToLoad) {
+          if (this.data.refreshRaycasters) refreshRaycasters();
+          if (this.data.refreshPhysics) refreshPhysicsBodies();
+        }
+      };
+      const refreshRaycasters = () => {
+        document.querySelectorAll("[raycaster]").forEach((ray) => {
+          ray.components.raycaster.refreshObjects();
+        });
+      };
+      const refreshPhysicsBodies = () => {
+        document.querySelectorAll("[delayed-dynamic-body]").forEach((el) => {
+          const config = el.getAttribute("delayed-dynamic-body");
+          el.removeAttribute("delayed-dynamic-body");
+          el.setAttribute("dynamic-body", config);
+        });
+        document.querySelectorAll("[delayed-static-body]").forEach((el) => {
+          const config = el.getAttribute("delayed-static-body");
+          el.removeAttribute("delayed-static-body");
+          el.setAttribute("static-body", config);
+        });
+      };
+      const models = document.querySelectorAll("[gltf-model]:not(a-mixin)");
+      let loadedModels = Array.from(models).filter((el) => {
+        var _a, _b;
+        return (_b = (_a = el.components) == null ? void 0 : _a["gltf-model"]) == null ? void 0 : _b.model;
+      }).length;
+      const modelsToLoad = models.length;
+      checkAllLoaded();
+      models.forEach((el) => {
+        el.addEventListener("model-loaded", () => {
+          loadedModels++;
+          checkAllLoaded();
+        });
+      });
+      setTimeout(() => {
+        if (loadedModels < modelsToLoad) {
+          console.warn(`Not all models loaded after 5 seconds (${loadedModels}/${modelsToLoad}). Forcing refresh anyway.`);
+          if (this.data.refreshRaycasters) refreshRaycasters();
+          if (this.data.refreshPhysics) refreshPhysicsBodies();
+        }
+      }, 5e3);
+    }
+  });
   const __vite_glob_0_4 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
     __proto__: null
   }, Symbol.toStringTag, { value: "Module" }));
@@ -887,33 +940,6 @@
   const __vite_glob_0_6 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
     __proto__: null
   }, Symbol.toStringTag, { value: "Module" }));
-  AFRAME.registerComponent("refresh-raycaster-on-model-load", {
-    init: function() {
-      const models = document.querySelectorAll("[gltf-model]");
-      let loadedModels = Array.from(models).filter((el) => {
-        var _a, _b;
-        return (_b = (_a = el.components) == null ? void 0 : _a["gltf-model"]) == null ? void 0 : _b.model;
-      }).length;
-      const modelsToLoad = models.length;
-      const checkAllLoaded = () => {
-        if (loadedModels === modelsToLoad) {
-          document.querySelectorAll("[raycaster]").forEach((ray) => {
-            ray.components.raycaster.refreshObjects();
-          });
-        }
-      };
-      checkAllLoaded();
-      models.forEach((el) => {
-        el.addEventListener("model-loaded", () => {
-          loadedModels++;
-          checkAllLoaded();
-        });
-      });
-    }
-  });
-  const __vite_glob_0_7 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
-    __proto__: null
-  }, Symbol.toStringTag, { value: "Module" }));
   AFRAME.registerComponent("vr-logger", {
     schema: {
       maxMessages: { type: "int", default: 5 }
@@ -954,7 +980,7 @@
       this.el.setAttribute("text", "value", this.messages.join("\n"));
     }
   });
-  const __vite_glob_0_8 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  const __vite_glob_0_7 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
     __proto__: null
   }, Symbol.toStringTag, { value: "Module" }));
   AFRAME.registerComponent("vr-mode-detect", {
@@ -973,10 +999,10 @@
       });
     }
   });
-  const __vite_glob_0_9 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  const __vite_glob_0_8 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
     __proto__: null
   }, Symbol.toStringTag, { value: "Module" }));
-  const components = /* @__PURE__ */ Object.assign({ "./components/_helpers/helpers.js": __vite_glob_0_0, "./components/arm-swing-movement/arm-swing-movement.js": __vite_glob_0_1, "./components/delayed-dynamic-body/delayed-dynamic-body.js": __vite_glob_0_2, "./components/holdable/holdable.js": __vite_glob_0_3, "./components/music-player/music-player.js": __vite_glob_0_4, "./components/raycaster-listener/raycaster-listener.js": __vite_glob_0_5, "./components/raycaster-manager/raycaster-manager.js": __vite_glob_0_6, "./components/refresh-raycaster-on-model-load/refresh-raycaster-on-model-load.js": __vite_glob_0_7, "./components/vr-logger/vr-logger.js": __vite_glob_0_8, "./components/vr-mode-detect/vr-mode-detect.js": __vite_glob_0_9 });
+  const components = /* @__PURE__ */ Object.assign({ "./components/_helpers/helpers.js": __vite_glob_0_0, "./components/arm-swing-movement/arm-swing-movement.js": __vite_glob_0_1, "./components/holdable/holdable.js": __vite_glob_0_2, "./components/music-player/music-player.js": __vite_glob_0_3, "./components/post-model-load-refresh/post-model-load-refresh.js": __vite_glob_0_4, "./components/raycaster-listener/raycaster-listener.js": __vite_glob_0_5, "./components/raycaster-manager/raycaster-manager.js": __vite_glob_0_6, "./components/vr-logger/vr-logger.js": __vite_glob_0_7, "./components/vr-mode-detect/vr-mode-detect.js": __vite_glob_0_8 });
   console.log("MSS A-Frame Kit Loaded", components);
   exports2.initVibration = initVibration;
   exports2.triggerHapticPattern = triggerHapticPattern;
