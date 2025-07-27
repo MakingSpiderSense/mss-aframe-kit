@@ -49,7 +49,7 @@ Add the `holdable` component to an entity you'd like to make grabbable, such as 
 
 ## Additional Notes
 
-- You don't need to manually add the intersection class (`.interactable`)—`holdable` adds it automatically.
+- You don't need to manually add the intersection class (`.interactable`) - `holdable` adds it automatically.
 - It's recommended to use the `post-model-load-refresh` component (part of `mss-aframe-kit`) if working with GLTF models to ensure raycasters and physics bodies are refreshed post-load.
 
 ## Advanced Usage
@@ -62,7 +62,8 @@ Add the `holdable` component to an entity you'd like to make grabbable, such as 
 ## Limitations
 
 - **No Two-Hand Support:** Only one controller can hold an object at a time.
-- **Ammo.js Support is Broken:** Collisions do not behave correctly after releasing an object with Ammo.js physics enabled.
+- **Ammo.js Support is Incomplete:** Collisions do not behave correctly after releasing an object with Ammo.js physics enabled.
+- **No Physics While Held**: Held objects are removed from the physics simulation, so they cannot collide with or affect other dynamic objects while being held.
 
 ---
 
