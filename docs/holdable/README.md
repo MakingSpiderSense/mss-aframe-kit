@@ -33,7 +33,10 @@ Add the `holdable` component to an entity you'd like to make grabbable, such as 
 | position  | vec3 | Local offset position where the object should be held (relative to controller).   | `0 0 0` | Any position coordinates (in meters) |
 | rotation  | vec3 | Local offset rotation applied when held (relative to controller).                 | `0 0 0` | Any rotation angles (in degrees)     |
 
-**Note**: Left-hand interactions are mirrored - position and rotation offsets are automatically flipped when grabbing with the left hand.
+**Notes**:
+
+- Left-hand interactions are mirrored - position and rotation offsets are automatically flipped when grabbing with the left hand.
+- Using "0 0 0" for position or rotation will indicate no custom position or rotation. For rotation, this means the rotation will be the same as the object's original rotation when grabbed.
 
 ## Behavior & Features
 
@@ -51,9 +54,11 @@ Add the `holdable` component to an entity you'd like to make grabbable, such as 
 
 - You don't need to manually add the intersection class (`.interactable`) - `holdable` adds it automatically.
 - It's recommended to use the `post-model-load-refresh` component (part of `mss-aframe-kit`) if working with GLTF models to ensure raycasters and physics bodies are refreshed post-load.
+- If using a custom rotation and position, just know that rotation pivots around the controller, not the model's center. It's easiest to set the custom rotation before position.
 
 ## Advanced Usage
 
+- **Grip/Release Property Modifiers:** Use the `holdable-grip-` and `holdable-release-` prefixes to apply component modifications on grip and release, respectively. This allows you to change properties like color, scale, or even apply animations when the object is held or released (e.g. `holdable-grip-material="color: blue; opacity: .1"`).
 - **Intersection Class Customization:** Use `data-holdable-intersection-class` on `<a-scene>` to change the default `.interactable` class used for raycaster targeting.
 - **Custom Shape Collision Support:** Preserves and restores multiple `shape__*` components with their configs ([Learn More](https://github.com/c-frame/aframe-physics-system/blob/master/CannonDriver.md#shape)).
 - **Supports Sleepy Physics Objects:** The `sleepy` component from the `aframe-physics-extras` library can be used to reduce jitter for objects that are stacked ([Learn More](https://github.com/wmurphyrd/aframe-physics-extras?tab=readme-ov-file#sleepy)).

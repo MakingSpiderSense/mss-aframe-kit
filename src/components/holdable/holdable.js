@@ -3,17 +3,9 @@
  *
  * Overview: A component that allows an object to be picked up and held by a controller.
  *
- * Description: This component makes an object "holdable" by VR controllers using raycaster events targeted at objects with the specified intersection class (defaults to "interactable"). When the controller's ray intersects the object, it listens for grip events. On grip down, the component saves any physics settings and re-parents the object to the controller, aligning it based on a local-custom position/rotation (from its schema) or a global default provided by a scene attribute (like `data-holdable-grab-position="0 0 0"`). Rotation pivots around the controller, not the model's center. It's easiest to set the custom rotation before position. If local-custom or global positions are not set, it defaults to where it was actually grabbed (local-computed). On grip up, it restores the original physics and parent. If the object has a `holdable-dynamic-body` attribute, it applies dynamic-body properties after release, even if the object was previously static.
+ * Description: This component makes an object "holdable" by VR controllers using raycaster events targeted at objects with the specified intersection class (defaults to "interactable"). When the controller's ray intersects the object, it listens for grip events. On grip down, the component saves any physics settings and re-parents the object to the controller, optionally aligning it based on a local-custom position/rotation (from its schema) or a global default provided by a scene attribute (like `data-holdable-grab-position="0 0 0"`). On grip up, it restores the original physics and parent.
  *
- * Notes:
- * - If using local-computed, using "0 0 0" for position or rotation will indicate no custom position or rotation. For rotation, this means the rotation will be the same as the object's original rotation when grabbed.
- * - Tip: You don't actually need to add the intersection class to the entity, as the holdable component will add it automatically if it is not already present. However, you can add it manually if you want to use the intersection class for other purposes.
- * - Tip: If using models with textures, it's recommended to include the `post-model-load-refresh` component on the scene to ensure raycasters and physics bodies are refreshed after all models have loaded.
- * - Rare: If you want to use another class for raycaster intersections instead of "interactable", you can add it globally to the scene using `data-holdable-intersection-class="your-class"`. This will be used for all holdable objects unless overridden.
- *
- * Limitations:
- * - While there is some code in here showing support for the ammo.js driver, it is not working correctly. After release, collisions no longer work.
- * - There is no way to grab an object with both hands at the same time. User must let go of one hand before grabbing with the other.
+ * More info: https://github.com/MakingSpiderSense/mss-aframe-kit/tree/main/docs/holdable
  */
 AFRAME.registerComponent("holdable", {
     schema: {
@@ -34,6 +26,10 @@ AFRAME.registerComponent("holdable", {
         this.insideMesh = {}; // Object to track if a either hand is inside the mesh.
         this.insideTestRaycaster = new THREE.Raycaster(); // Temporary raycaster for inside-mesh test.
         this.insideTestRaycaster.far = 10;
+        this.savedComponentStates = {}; // Modifiers - Store original component states
+        this.gripModifiers = {}; // Modifiers - Store grip modifiers
+        this.releaseModifiers = {}; // Modifiers - Store release modifiers
+        this.scanModifierAttributes(); // Modifiers - Scan for grip and release modifiers
         this.onGripDown = this.onGripDown.bind(this);
         this.onGripUp = this.onGripUp.bind(this);
         this.onHitStart = this.onHitStart.bind(this);
@@ -50,6 +46,102 @@ AFRAME.registerComponent("holdable", {
         // If the specified intersection class is not already on the entity, add it
         if (!this.el.classList.contains(intersectionClass)) {
             this.el.classList.add(intersectionClass);
+        }
+    },
+    // Modifiers - Scan for grip and release modifier attributes
+    scanModifierAttributes: function() {
+        const attributes = this.el.getAttributeNames();
+        for (let attr of attributes) {
+            // Check for grip modifiers (holdable-grip-componentName)
+            if (attr.startsWith('holdable-grip-')) {
+                const componentName = attr.substring('holdable-grip-'.length); // Remove the prefix
+                const attributeString = this.el.getAttribute(attr);
+                // Parse the string into an object
+                const parsedProps = this.parseAttributeString(attributeString);
+                this.gripModifiers[componentName] = parsedProps;
+            }
+            // Check for release modifiers (holdable-release-componentName)
+            else if (attr.startsWith('holdable-release-')) {
+                const componentName = attr.substring('holdable-release-'.length); // Remove the prefix
+                const attributeString = this.el.getAttribute(attr);
+                // Parse the string into an object
+                const parsedProps = this.parseAttributeString(attributeString);
+                this.releaseModifiers[componentName] = parsedProps;
+            }
+        }
+    },
+    // Modifiers - Parse an A-Frame attribute string into a JavaScript object or direct value
+    parseAttributeString: function(attributeString) {
+        // Handle flag components (e.g. light)
+        if (!attributeString || attributeString.trim() === '') {
+            return { __is_flag: true };
+        }
+        // If the string doesn't contain a colon, it's a direct value (e.g. scale="3 1 2")
+        if (attributeString.indexOf(':') === -1) {
+            return { __direct_value: attributeString.trim() };
+        }
+        const result = {};
+        // Split by semicolons and then by colons to get key-value pairs (e.g. material="color: red; opacity: 0.5")
+        const kvPairs = attributeString.split(';');
+        for (let kvPair of kvPairs) {
+            if (!kvPair.trim()) continue;
+            // Split by the first colon to separate key and value
+            const colonIndex = kvPair.indexOf(':');
+            if (colonIndex === -1) continue;
+            const key = kvPair.substring(0, colonIndex).trim();
+            let value = kvPair.substring(colonIndex + 1).trim();
+            // Convert value to appropriate type
+            if (value === 'true') value = true;
+            else if (value === 'false') value = false;
+            else if (!isNaN(parseFloat(value)) && isFinite(value)) {
+                value = parseFloat(value);
+            }
+            result[key] = value;
+        }
+        return result;
+    },
+    // Modifiers - Apply component modifications handling different component types
+    // Note: newProps can be a flag component (e.g., __is_flag: true), a direct value component (e.g., __direct_value: "3 1 2"), or a property-based component with many properties (e.g., { prop1: "value1", prop2: "value2" })
+    applyComponentModifications: function(componentName, newProps, saveOriginal = false) {
+        // Skip if new props is empty or undefined
+        if (!newProps || Object.keys(newProps).length === 0) return;
+        // Save original state if needed and not already saved
+        if (saveOriginal && !this.savedComponentStates[componentName]) {
+            if (this.el.hasAttribute(componentName)) {
+                this.savedComponentStates[componentName] = AFRAME.utils.clone(this.el.getAttribute(componentName));
+            } else {
+                // Mark that the component didn't exist
+                this.savedComponentStates[componentName] = null;
+            }
+        }
+        // Handle different types of component values
+        if (newProps.__is_flag) {
+            // It's a flag component, just add it without values
+            this.el.setAttribute(componentName, '');
+        }
+        else if (newProps.__direct_value) {
+            // It's a direct value component like position="3 1 2"
+            this.el.setAttribute(componentName, newProps.__direct_value);
+        }
+        else {
+            // It's a property-based component
+            // Apply each property individually to ensure it's properly set
+            for (const propName in newProps) {
+                this.el.setAttribute(componentName, propName, newProps[propName]);
+            }
+        }
+    },
+    // Modifiers - Restore original component state
+    restoreComponentState: function(componentName) {
+        if (componentName in this.savedComponentStates) {
+            const originalState = this.savedComponentStates[componentName];
+            if (originalState === null) {
+                // Component didn't exist originally, remove it
+                this.el.removeAttribute(componentName);
+            } else {
+                // Restore the original state
+                this.el.setAttribute(componentName, originalState);
+            }
         }
     },
     tick: function (time, delta) {
@@ -124,6 +216,14 @@ AFRAME.registerComponent("holdable", {
             hand: handEl,
             entity: this.el,
         });
+        // Modifiers - Apply all grip modifiers and save original states
+        for (const componentName in this.gripModifiers) {
+            this.applyComponentModifications(
+                componentName,
+                this.gripModifiers[componentName],
+                true, // Save original state
+            );
+        }
         this.holdingHand = handEl;
         // Save physics attributes if they exist.
         if (this.el.hasAttribute("dynamic-body")) {
@@ -350,6 +450,22 @@ AFRAME.registerComponent("holdable", {
                 }
             }
         }, 50);
+        // Modifiers - Apply all release modifiers
+        for (const componentName in this.releaseModifiers) {
+            this.applyComponentModifications(
+                componentName,
+                this.releaseModifiers[componentName],
+                false // Don't save original state
+            );
+        }
+        // Modifiers - Restore original states for components that don't have a release modifier
+        for (const componentName in this.savedComponentStates) {
+            if (!(componentName in this.releaseModifiers)) {
+                this.restoreComponentState(componentName);
+            }
+        }
+        // Modifiers - Clear saved component states
+        this.savedComponentStates = {};
         // Simulate pulling the raycaster away by temporarily setting the raycaster's far value to 0, then restoring it. This lets the user grab the object again without moving the controller away first.
         const handEls = document.querySelectorAll("[meta-touch-controls], [oculus-touch-controls], [hand-controls]");
         if (handEls) {
