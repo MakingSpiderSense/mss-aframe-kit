@@ -462,6 +462,7 @@ AFRAME.registerComponent("holdable", {
         // Modifiers - Clear saved component states
         this.savedComponentStates = {};
         // Emit grip-up event with details
+        // Note: Located here so that entity is reparented back and modifiers are restored if applicable.
         this.el.emit("grip-up", {
             hand: this.holdingHand,
             entity: this.el,
