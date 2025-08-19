@@ -3,17 +3,9 @@
  *
  * Overview: A component that allows an object to be picked up and held by a controller.
  *
- * Description: This component makes an object "holdable" by VR controllers using raycaster events targeted at objects with the specified intersection class (defaults to "interactable"). When the controller's ray intersects the object, it listens for grip events. On grip down, the component saves any physics settings and re-parents the object to the controller, aligning it based on a local-custom position/rotation (from its schema) or a global default provided by a scene attribute (like `data-holdable-grab-position="0 0 0"`). Rotation pivots around the controller, not the model's center. It's easiest to set the custom rotation before position. If local-custom or global positions are not set, it defaults to where it was actually grabbed (local-computed). On grip up, it restores the original physics and parent. If the object has a `holdable-dynamic-body` attribute, it applies dynamic-body properties after release, even if the object was previously static. You can use the `holdable-grip-` and `holdable-release-` prefixes to apply component modifications on grip and release, respectively. This allows you to change properties like color, scale, or even apply animations when the object is held or released (e.g. `holdable-grip-material="color: blue; opacity: .1"`).
+ * Description: This component makes an object "holdable" by VR controllers using raycaster events targeted at objects with the specified intersection class (defaults to "interactable"). When the controller's ray intersects the object, it listens for grip events. On grip down, the component saves any physics settings and re-parents the object to the controller, optionally aligning it based on a local-custom position/rotation (from its schema) or a global default provided by a scene attribute (like `data-holdable-grab-position="0 0 0"`). On grip up, it restores the original physics and parent.
  *
- * Notes:
- * - If using local-computed, using "0 0 0" for position or rotation will indicate no custom position or rotation. For rotation, this means the rotation will be the same as the object's original rotation when grabbed.
- * - Tip: You don't actually need to add the intersection class to the entity, as the holdable component will add it automatically if it is not already present. However, you can add it manually if you want to use the intersection class for other purposes.
- * - Tip: If using models with textures, it's recommended to include the `post-model-load-refresh` component on the scene to ensure raycasters and physics bodies are refreshed after all models have loaded.
- * - Rare: If you want to use another class for raycaster intersections instead of "interactable", you can add it globally to the scene using `data-holdable-intersection-class="your-class"`. This will be used for all holdable objects unless overridden.
- *
- * Limitations:
- * - While there is some code in here showing support for the ammo.js driver, it is not working correctly. After release, collisions no longer work.
- * - There is no way to grab an object with both hands at the same time. User must let go of one hand before grabbing with the other.
+ * More info: https://github.com/MakingSpiderSense/mss-aframe-kit/tree/main/docs/holdable
  */
 AFRAME.registerComponent("holdable", {
     schema: {
