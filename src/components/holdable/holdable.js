@@ -427,24 +427,6 @@ AFRAME.registerComponent("holdable", {
             hand: this.holdingHand,
             entity: this.el,
         });
-        // 🚧⬇️ Under Construction
-        // Apply all release modifiers
-        for (const componentName in this.releaseModifiers) {
-            this.applyComponentModifications(
-                componentName,
-                this.releaseModifiers[componentName],
-                false // Don't save original state
-            );
-        }
-        // Restore original states for components that don't have a release modifier
-        for (const componentName in this.savedComponentStates) {
-            if (!(componentName in this.releaseModifiers)) {
-                this.restoreComponentState(componentName);
-            }
-        }
-        // Clear saved component states
-        this.savedComponentStates = {};
-        // 🚧🛑 Under Construction
         this.el.object3D.updateMatrixWorld(true);
         // Reparent back to the original parent.
         this.originalParent.object3D.attach(this.el.object3D);
@@ -498,6 +480,24 @@ AFRAME.registerComponent("holdable", {
                 }
             }
         }, 50);
+        // 🚧⬇️ Under Construction
+        // Apply all release modifiers
+        for (const componentName in this.releaseModifiers) {
+            this.applyComponentModifications(
+                componentName,
+                this.releaseModifiers[componentName],
+                false // Don't save original state
+            );
+        }
+        // Restore original states for components that don't have a release modifier
+        for (const componentName in this.savedComponentStates) {
+            if (!(componentName in this.releaseModifiers)) {
+                this.restoreComponentState(componentName);
+            }
+        }
+        // Clear saved component states
+        this.savedComponentStates = {};
+        // 🚧🛑 Under Construction
         // Simulate pulling the raycaster away by temporarily setting the raycaster's far value to 0, then restoring it. This lets the user grab the object again without moving the controller away first.
         const handEls = document.querySelectorAll("[meta-touch-controls], [oculus-touch-controls], [hand-controls]");
         if (handEls) {
