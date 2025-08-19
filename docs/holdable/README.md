@@ -54,6 +54,7 @@ Add the `holdable` component to an entity you'd like to make grabbable, such as 
 
 ## Advanced Usage
 
+- **Grip/Release Property Modifiers:** Use the `holdable-grip-` and `holdable-release-` prefixes to apply component modifications on grip and release, respectively. This allows you to change properties like color, scale, or even apply animations when the object is held or released (e.g. `holdable-grip-material="color: blue; opacity: .1"`).
 - **Intersection Class Customization:** Use `data-holdable-intersection-class` on `<a-scene>` to change the default `.interactable` class used for raycaster targeting.
 - **Custom Shape Collision Support:** Preserves and restores multiple `shape__*` components with their configs ([Learn More](https://github.com/c-frame/aframe-physics-system/blob/master/CannonDriver.md#shape)).
 - **Supports Sleepy Physics Objects:** The `sleepy` component from the `aframe-physics-extras` library can be used to reduce jitter for objects that are stacked ([Learn More](https://github.com/wmurphyrd/aframe-physics-extras?tab=readme-ov-file#sleepy)).
