@@ -392,11 +392,6 @@ AFRAME.registerComponent("holdable", {
     },
     onGripUp: function (evt) {
         if (!this.isHeld || !this.holdingHand) return;
-        // Emit grip-up event with details
-        this.el.emit("grip-up", {
-            hand: this.holdingHand,
-            entity: this.el,
-        });
         this.el.object3D.updateMatrixWorld(true);
         // Reparent back to the original parent.
         this.originalParent.object3D.attach(this.el.object3D);
@@ -466,6 +461,11 @@ AFRAME.registerComponent("holdable", {
         }
         // Modifiers - Clear saved component states
         this.savedComponentStates = {};
+        // Emit grip-up event with details
+        this.el.emit("grip-up", {
+            hand: this.holdingHand,
+            entity: this.el,
+        });
         // Simulate pulling the raycaster away by temporarily setting the raycaster's far value to 0, then restoring it. This lets the user grab the object again without moving the controller away first.
         const handEls = document.querySelectorAll("[meta-touch-controls], [oculus-touch-controls], [hand-controls]");
         if (handEls) {
