@@ -22,7 +22,11 @@ AFRAME.registerComponent("vr-logger", {
         console.log = (...args) => {
             originalConsoleLog(...args);
             // Add the console message to the array
-            this.addMessage(args.map((a) => a.toString()).join(" "));
+            this.addMessage(args.map((a) => {
+                if (a === null) return 'null';
+                if (a === undefined) return 'undefined';
+                return a.toString();
+            }).join(" "));
         };
     },
     // Add a message to the console
