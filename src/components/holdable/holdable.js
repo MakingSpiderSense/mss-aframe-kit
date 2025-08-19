@@ -86,15 +86,16 @@ AFRAME.registerComponent("holdable", {
     },
     // Modifiers - Parse an A-Frame attribute string into a JavaScript object or direct value
     parseAttributeString: function(attributeString) {
-        if (!attributeString) return {};
-        // Handle empty string - could be a flag component
-        if (attributeString.trim() === '') return { __is_flag: true };
-        // If the string doesn't contain a colon, it's a direct value
+        // Handle flag components (e.g. light)
+        if (!attributeString || attributeString.trim() === '') {
+            return { __is_flag: true };
+        }
+        // If the string doesn't contain a colon, it's a direct value (e.g. scale="3 1 2")
         if (attributeString.indexOf(':') === -1) {
             return { __direct_value: attributeString.trim() };
         }
         const result = {};
-        // Split by semicolons and then by colons to get key-value pairs
+        // Split by semicolons and then by colons to get key-value pairs (e.g. material="color: red; opacity: 0.5")
         const kvPairs = attributeString.split(';');
         for (let kvPair of kvPairs) {
             if (!kvPair.trim()) continue;
@@ -119,12 +120,7 @@ AFRAME.registerComponent("holdable", {
         console.log(`Attempting to apply ${componentName} modifications:`, newProps);
         // Skip if new props is empty or undefined
         if (!newProps || Object.keys(newProps).length === 0) {
-            if (!newProps) {
-                console.log(`No properties to apply for ${componentName}: !newProps`);
-            }
-            if (Object.keys(newProps).length === 0) {
-                console.log(`No properties to apply for ${componentName}: Object.keys(newProps).length === 0`);
-            }
+            console.log(`No properties to apply for ${componentName}`);
             return;
         }
         // Save original state if needed and not already saved
