@@ -37,6 +37,7 @@ Add the `holdable` component to an entity you'd like to make grabbable, such as 
 
 - Left-hand interactions are mirrored - position and rotation offsets are automatically flipped when grabbing with the left hand.
 - Using "0 0 0" for position or rotation will indicate no custom position or rotation. For rotation, this means the rotation will be the same as the object's original rotation when grabbed.
+- If using a custom rotation and position, just know that rotation pivots around the controller, not the model's center. It's easiest to set the custom rotation before position.
 
 ## Behavior & Features
 
@@ -54,7 +55,6 @@ Add the `holdable` component to an entity you'd like to make grabbable, such as 
 
 - You don't need to manually add the intersection class (`.interactable`) - `holdable` adds it automatically.
 - It's recommended to use the `post-model-load-refresh` component (part of `mss-aframe-kit`) if working with GLTF models to ensure raycasters and physics bodies are refreshed post-load.
-- If using a custom rotation and position, just know that rotation pivots around the controller, not the model's center. It's easiest to set the custom rotation before position.
 
 ## Advanced Usage
 
