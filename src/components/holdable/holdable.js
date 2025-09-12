@@ -11,6 +11,7 @@ AFRAME.registerComponent("holdable", {
     schema: {
         position: { type: "vec3", default: { x: 0, y: 0, z: 0 } },
         rotation: { type: "vec3", default: { x: 0, y: 0, z: 0 } },
+        debug: { type: "boolean", default: false }, // Show debug logs in console (helpful for getting grab position/rotation)
     },
     // dependencies: ['raycaster'], // This causes huge performance issues and is not needed at all, but good for benchmarking performance of models
     init: function () {
@@ -338,11 +339,21 @@ AFRAME.registerComponent("holdable", {
                 useCustomPos = true;
                 isGlobalDefault = true;
             } else {
-                // Fall back to the computed position.
+                // Fall back to the computed position (where it was actually grabbed).
                 customGrabPos = pos;
                 useCustomPos = false;
+                // Debug - pasteable attribute that reproduces this grab (order: XYZ, mirrors left-hand like apply path)
+                if (this.data.debug) {
+                    // If hand is left, output "Use right hand to get position and rotation values"
+                    if (handType === "left") {
+                        console.log("Use right hand to get position and rotation values. The left hand automatically mirrors the right.");
+                    } else {
+                        this.generateDebugGrabAttributes(pos, quat, handType);
+                    }
+                }
             }
         }
+
         // Determine the grab rotation.
         let customGrabQuat;
         if (this.data.rotation.x !== 0 || this.data.rotation.y !== 0 || this.data.rotation.z !== 0) {
@@ -389,6 +400,29 @@ AFRAME.registerComponent("holdable", {
         this.el.object3D.position.copy(finalPos);
         this.el.object3D.quaternion.copy(customGrabQuat);
         this.el.object3D.updateMatrixWorld(true);
+    },
+    // Generate debug grab attributes for easy copy-paste configuration for specific grab position/rotation
+    generateDebugGrabAttributes: function(pos, quat) {
+        const eulerForAttr = new THREE.Euler().setFromQuaternion(quat, "XYZ"); // Convert quaternion to Euler angles
+        // Convert radians to degrees
+        const rotX = THREE.MathUtils.radToDeg(eulerForAttr.x);
+        let rotY = THREE.MathUtils.radToDeg(eulerForAttr.y);
+        let rotZ = THREE.MathUtils.radToDeg(eulerForAttr.z);
+        // Compute the bottom-corner offset
+        const tempObj = this.el.object3D.clone(); // Create temporary copy of object
+        tempObj.quaternion.copy(quat); // Apply the quaternion rotation to temp object
+        tempObj.updateMatrixWorld(true); // Update matrix to reflect new rotation
+        const bbox = new THREE.Box3().setFromObject(tempObj); // Calculate bounding box of rotated object
+        const size = bbox.getSize(new THREE.Vector3()); // Get dimensions of bounding box
+        const bottomCornerOffset = new THREE.Vector3(); // Create vector for offset calculation
+        // Apply offset to position
+        let posForAttr;
+        bottomCornerOffset.set(size.x / 2, -size.y / 2, size.z / 2); // Set offset to bottom left corner (right hand)
+        posForAttr = pos.clone().add(bottomCornerOffset); // Apply corner offset to position
+        // Output copy-pasteable line to the console
+        const posStr = posForAttr.x.toFixed(3) + " " + posForAttr.y.toFixed(3) + " " + posForAttr.z.toFixed(3);
+        const rotStr = rotX.toFixed(1) + " " + rotY.toFixed(1) + " " + rotZ.toFixed(1);
+        console.log('holdable="position: ' + posStr + '; rotation: ' + rotStr + '"');
     },
     onGripUp: function (evt) {
         if (!this.isHeld || !this.holdingHand) return;
