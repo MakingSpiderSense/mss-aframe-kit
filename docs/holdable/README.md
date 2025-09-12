@@ -28,16 +28,18 @@ Add the `holdable` component to an entity you'd like to make grabbable, such as 
 
 ## Properties
 
-| Parameter | Type | Description                                                                       | Default | Options                              |
-| --------- | ---- | --------------------------------------------------------------------------------- | ------- | ------------------------------------ |
-| position  | vec3 | Local offset position where the object should be held (relative to controller).   | `0 0 0` | Any position coordinates (in meters) |
-| rotation  | vec3 | Local offset rotation applied when held (relative to controller).                 | `0 0 0` | Any rotation angles (in degrees)     |
+| Parameter | Type | Description                                                                                    | Default | Options                              |
+| --------- | ---- | ---------------------------------------------------------------------------------------------- | ------- | ------------------------------------ |
+| position  | vec3 | Local offset position where the object should be held (relative to controller).                | `0 0 0` | Any position coordinates (in meters) |
+| rotation  | vec3 | Local offset rotation applied when held (relative to controller).                              | `0 0 0` | Any rotation angles (in degrees)     |
+| debug     | bool | Outputs the relative position and rotation of held objects. Useful for setting custom offsets. | `false` | `true`, `false`                      |
 
 **Notes**:
 
 - Left-hand interactions are mirrored - position and rotation offsets are automatically flipped when grabbing with the left hand.
 - Using "0 0 0" for position or rotation will indicate no custom position or rotation. For rotation, this means the rotation will be the same as the object's original rotation when grabbed.
-- If using a custom rotation and position, just know that rotation pivots around the controller, not the model's center. It's easiest to set the custom rotation before position.
+- Rotation pivots around the controller, not the object. Set rotation before position for easier adjustments.
+- For easiest setup, enable `debug: true` and grab the object naturally. Then copy values from console (via [dev tools](https://developer.chrome.com/docs/devtools/remote-debugging) or [vr-logger](../../src/components/vr-logger/vr-logger.js) component).
 
 ## Behavior & Features
 
