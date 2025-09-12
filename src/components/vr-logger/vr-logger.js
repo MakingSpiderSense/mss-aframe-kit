@@ -1,4 +1,10 @@
 // VR Console Logger
+//
+// To use, add the following within the camera rig or elsewhere if desired:
+//
+// <a-entity position="0 1 -2" rotation="0 0 0">
+//     <a-text position="0 0.25 0" scale=".5 .5 .5" vr-logger></a-text>
+// </a-entity>
 AFRAME.registerComponent("vr-logger", {
     schema: {
         maxMessages: { type: "int", default: 5 }, // Maximum number of messages to display
