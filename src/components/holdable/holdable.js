@@ -342,9 +342,8 @@ AFRAME.registerComponent("holdable", {
                 // Fall back to the computed position (where it was actually grabbed).
                 customGrabPos = pos;
                 useCustomPos = false;
-                // Debug - pasteable attribute that reproduces this grab (order: XYZ, mirrors left-hand like apply path)
+                // Debug - pasteable attribute to reproduce grab position/rotation
                 if (this.data.debug) {
-                    // If hand is left, output "Use right hand to get position and rotation values"
                     if (handType === "left") {
                         console.log("Use right hand to get position and rotation values. The left hand automatically mirrors the right.");
                     } else {
