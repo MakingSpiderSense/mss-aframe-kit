@@ -7,14 +7,16 @@
     <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.5.4/dist/aframe-extras.min.js"></script><!-- Not important -->
     <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-physics-system@v4.2.2/dist/aframe-physics-system.js"></script><!-- Only need if xxx -->
     <script src="https://unpkg.com/aframe-physics-extras@0.1.2/dist/aframe-physics-extras.min.js"></script><!-- Only need if xxx -->
-    <script src="https://unpkg.com/aframe-haptics-component/dist/aframe-haptics-component.min.js"></script><!-- Only need if xxx -->
-    <script src="https://cdn.jsdelivr.net/gh/MakingSpiderSense/mss-aframe-kit@main/src/components/holdable/holdable.js"></script>
+    <script src="https://unpkg.com/aframe-haptics-component/dist/aframe-haptics-component.min.js"></script><!-- Only need if you want haptic feedback. -->
+    <script src="https://cdn.jsdelivr.net/gh/MakingSpiderSense/mss-aframe-kit@main/dist/mss-aframe-kit.min.js"></script>
 </head>
 
 <body>
+    <!-- Include `post-model-load-refresh` for better model compatibility. And use `raycaster-listener` if you want to have haptic feedback when grabbing objects. -->
     <a-scene
         stats
         post-model-load-refresh
+        raycaster-listener
         physics="driver: local; debug: false;"
         >
 
