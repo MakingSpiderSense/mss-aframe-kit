@@ -37,7 +37,7 @@ Add the `holdable` component to an entity you'd like to make grabbable, such as 
 
 **Notes**:
 
-- Left-hand interactions are mirror right hand - position and rotation offsets are automatically flipped when grabbing with the left hand. But you can customize the inverted axes with `leftHandRotationInvert`.
+- Left-hand interactions mirror the right hand - position and rotation offsets are automatically flipped when grabbing with the left hand. But you can customize the inverted axes with `leftHandRotationInvert`.
 - Using "0 0 0" for position or rotation will indicate no custom position or rotation. For rotation, this means the rotation will be the same as the object's original rotation when grabbed.
 - For easiest setup, enable `debug: true` and grab the object naturally. Then copy values from console (via [dev tools](https://developer.chrome.com/docs/devtools/remote-debugging) or [vr-logger](../../src/components/vr-logger/vr-logger.js) component).
 

@@ -362,7 +362,6 @@ AFRAME.registerComponent("holdable", {
             let customGrabRotationZ = this.data.rotation.z;
             // Invert specified axes for left hand
             if (handType === "left") {
-                // Output a string version of leftHandRotationInvert
                 if (this.data.leftHandRotationInvert.includes("x")) {
                     customGrabRotationX = -customGrabRotationX;
                 }
