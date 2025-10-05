@@ -11,6 +11,7 @@ AFRAME.registerComponent("holdable", {
     schema: {
         position: { type: "vec3", default: { x: 0, y: 0, z: 0 } },
         rotation: { type: "vec3", default: { x: 0, y: 0, z: 0 } },
+        leftHandRotationInvert: {type: 'array', default: ['y','z']}, // Pick the rotation axes to invert for left hand (if using local-custom rotation)
         debug: { type: "boolean", default: false }, // Show debug logs in console (helpful for getting grab position/rotation)
     },
     // dependencies: ['raycaster'], // This causes huge performance issues and is not needed at all, but good for benchmarking performance of models
@@ -355,12 +356,30 @@ AFRAME.registerComponent("holdable", {
         // Determine the grab rotation.
         let customGrabQuat;
         if (this.data.rotation.x !== 0 || this.data.rotation.y !== 0 || this.data.rotation.z !== 0) {
-            // Adjust rotation based on hand
-            let customGrabRotationY = handType === "left" ? -this.data.rotation.y : this.data.rotation.y;
-            let customGrabRotationZ = handType === "left" ? -this.data.rotation.z : this.data.rotation.z;
+            // Get the Euler angles for the custom rotation
+            let customGrabRotationX = this.data.rotation.x;
+            let customGrabRotationY = this.data.rotation.y;
+            let customGrabRotationZ = this.data.rotation.z;
+            // Invert specified axes for left hand
+            if (handType === "left") {
+                // Output a string version of leftHandRotationInvert
+                if (this.data.leftHandRotationInvert.includes("x")) {
+                    customGrabRotationX = -customGrabRotationX;
+                }
+                if (this.data.leftHandRotationInvert.includes("y")) {
+                    customGrabRotationY = -customGrabRotationY;
+                }
+                if (this.data.leftHandRotationInvert.includes("z")) {
+                    customGrabRotationZ = -customGrabRotationZ;
+                }
+            }
             // Create the rotation quaternion from Euler angles (in radians)
-            const euler = new THREE.Euler(THREE.MathUtils.degToRad(this.data.rotation.x), THREE.MathUtils.degToRad(customGrabRotationY), THREE.MathUtils.degToRad(customGrabRotationZ), "YXZ");
-            customGrabQuat = new THREE.Quaternion().setFromEuler(euler);
+            const euler = new THREE.Euler(
+                THREE.MathUtils.degToRad(customGrabRotationX),
+                THREE.MathUtils.degToRad(customGrabRotationY),
+                THREE.MathUtils.degToRad(customGrabRotationZ),
+                "YXZ", // The rotation order
+            );
             // Save original object position and quaternion
             const origPosition = this.el.object3D.position.clone();
             const origQuaternion = this.el.object3D.quaternion.clone();
