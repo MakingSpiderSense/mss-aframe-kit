@@ -352,15 +352,26 @@ AFRAME.registerComponent("holdable", {
                 }
             }
         }
-
         // Determine the grab rotation.
         let customGrabQuat;
         if (this.data.rotation.x !== 0 || this.data.rotation.y !== 0 || this.data.rotation.z !== 0) {
             // Adjust rotation based on hand
             let customGrabRotationY = handType === "left" ? -this.data.rotation.y : this.data.rotation.y;
             let customGrabRotationZ = handType === "left" ? -this.data.rotation.z : this.data.rotation.z;
-            const euler = new THREE.Euler(THREE.MathUtils.degToRad(this.data.rotation.x), THREE.MathUtils.degToRad(customGrabRotationY), THREE.MathUtils.degToRad(customGrabRotationZ));
+            // Create the rotation quaternion from Euler angles (in radians)
+            const euler = new THREE.Euler(THREE.MathUtils.degToRad(this.data.rotation.x), THREE.MathUtils.degToRad(customGrabRotationY), THREE.MathUtils.degToRad(customGrabRotationZ), "YXZ");
             customGrabQuat = new THREE.Quaternion().setFromEuler(euler);
+            // Save original object position and quaternion
+            const origPosition = this.el.object3D.position.clone();
+            const origQuaternion = this.el.object3D.quaternion.clone();
+            // Apply rotation around object's own pivot before attaching to hand
+            const rotationQuat = new THREE.Quaternion().setFromEuler(euler);
+            this.el.object3D.quaternion.copy(rotationQuat);
+            // Store this rotated state for application after attachment
+            customGrabQuat = this.el.object3D.quaternion.clone();
+            // Restore original state until we're ready to attach
+            this.el.object3D.position.copy(origPosition);
+            this.el.object3D.quaternion.copy(origQuaternion);
         } else {
             customGrabQuat = quat; // Use the object's current rotation.
         }
@@ -402,7 +413,7 @@ AFRAME.registerComponent("holdable", {
     },
     // Generate debug grab attributes for easy copy-paste configuration for specific grab position/rotation
     generateDebugGrabAttributes: function(pos, quat) {
-        const eulerForAttr = new THREE.Euler().setFromQuaternion(quat, "XYZ"); // Convert quaternion to Euler angles
+        const eulerForAttr = new THREE.Euler().setFromQuaternion(quat, "YXZ"); // Convert quaternion to Euler angles
         // Convert radians to degrees
         const rotX = THREE.MathUtils.radToDeg(eulerForAttr.x);
         let rotY = THREE.MathUtils.radToDeg(eulerForAttr.y);
