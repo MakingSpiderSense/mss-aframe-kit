@@ -1,4 +1,4 @@
-/*! mss-aframe-kit v2.0.0 */
+/*! mss-aframe-kit v2.1.0 */
 (function(global, factory) {
   typeof exports === "object" && typeof module !== "undefined" ? factory(exports) : typeof define === "function" && define.amd ? define(["exports"], factory) : (global = typeof globalThis !== "undefined" ? globalThis : global || self, factory(global.MSSAFrameKit = {}));
 })(this, function(exports2) {
@@ -336,6 +336,8 @@
     schema: {
       position: { type: "vec3", default: { x: 0, y: 0, z: 0 } },
       rotation: { type: "vec3", default: { x: 0, y: 0, z: 0 } },
+      leftHandRotationInvert: { type: "array", default: ["y", "z"] },
+      // Pick the rotation axes to invert for left hand (if using local-custom rotation)
       debug: { type: "boolean", default: false }
       // Show debug logs in console (helpful for getting grab position/rotation)
     },
@@ -620,10 +622,34 @@
       }
       let customGrabQuat;
       if (this.data.rotation.x !== 0 || this.data.rotation.y !== 0 || this.data.rotation.z !== 0) {
-        let customGrabRotationY = handType === "left" ? -this.data.rotation.y : this.data.rotation.y;
-        let customGrabRotationZ = handType === "left" ? -this.data.rotation.z : this.data.rotation.z;
-        const euler = new THREE.Euler(THREE.MathUtils.degToRad(this.data.rotation.x), THREE.MathUtils.degToRad(customGrabRotationY), THREE.MathUtils.degToRad(customGrabRotationZ));
-        customGrabQuat = new THREE.Quaternion().setFromEuler(euler);
+        let customGrabRotationX = this.data.rotation.x;
+        let customGrabRotationY = this.data.rotation.y;
+        let customGrabRotationZ = this.data.rotation.z;
+        if (handType === "left") {
+          if (this.data.leftHandRotationInvert.includes("x")) {
+            customGrabRotationX = -customGrabRotationX;
+          }
+          if (this.data.leftHandRotationInvert.includes("y")) {
+            customGrabRotationY = -customGrabRotationY;
+          }
+          if (this.data.leftHandRotationInvert.includes("z")) {
+            customGrabRotationZ = -customGrabRotationZ;
+          }
+        }
+        const euler = new THREE.Euler(
+          THREE.MathUtils.degToRad(customGrabRotationX),
+          THREE.MathUtils.degToRad(customGrabRotationY),
+          THREE.MathUtils.degToRad(customGrabRotationZ),
+          "YXZ"
+          // The rotation order
+        );
+        const origPosition = this.el.object3D.position.clone();
+        const origQuaternion = this.el.object3D.quaternion.clone();
+        const rotationQuat = new THREE.Quaternion().setFromEuler(euler);
+        this.el.object3D.quaternion.copy(rotationQuat);
+        customGrabQuat = this.el.object3D.quaternion.clone();
+        this.el.object3D.position.copy(origPosition);
+        this.el.object3D.quaternion.copy(origQuaternion);
       } else {
         customGrabQuat = quat;
       }
@@ -657,7 +683,7 @@
     },
     // Generate debug grab attributes for easy copy-paste configuration for specific grab position/rotation
     generateDebugGrabAttributes: function(pos, quat) {
-      const eulerForAttr = new THREE.Euler().setFromQuaternion(quat, "XYZ");
+      const eulerForAttr = new THREE.Euler().setFromQuaternion(quat, "YXZ");
       const rotX = THREE.MathUtils.radToDeg(eulerForAttr.x);
       let rotY = THREE.MathUtils.radToDeg(eulerForAttr.y);
       let rotZ = THREE.MathUtils.radToDeg(eulerForAttr.z);

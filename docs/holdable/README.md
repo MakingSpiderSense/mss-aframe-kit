@@ -28,17 +28,17 @@ Add the `holdable` component to an entity you'd like to make grabbable, such as 
 
 ## Properties
 
-| Parameter | Type | Description                                                                                    | Default | Options                              |
-| --------- | ---- | ---------------------------------------------------------------------------------------------- | ------- | ------------------------------------ |
-| position  | vec3 | Local offset position where the object should be held (relative to controller).                | `0 0 0` | Any position coordinates (in meters) |
-| rotation  | vec3 | Local offset rotation applied when held (relative to controller).                              | `0 0 0` | Any rotation angles (in degrees)     |
-| debug     | bool | Outputs the relative position and rotation of held objects. Useful for setting custom offsets. | `false` | `true`, `false`                      |
+| Parameter              | Type  | Description                                                                                    | Default | Options                              |
+| ---------------------- | ----- | ---------------------------------------------------------------------------------------------- | ------- | ------------------------------------ |
+| position               | vec3  | Local offset position where the object should be held (relative to controller).                | `0 0 0` | Any position coordinates (in meters) |
+| rotation               | vec3  | Local offset rotation applied when held (relative to controller).                              | `0 0 0` | Any rotation angles (in degrees)     |
+| leftHandRotationInvert | array | If using custom position or rotation, choose the axes to invert for left hand.                 | `y, z`  | `x`, `y`, `z` (comma-separated)      |
+| debug                  | bool  | Outputs the relative position and rotation of held objects. Useful for setting custom offsets. | `false` | `true`, `false`                      |
 
 **Notes**:
 
-- Left-hand interactions are mirrored - position and rotation offsets are automatically flipped when grabbing with the left hand.
+- Left-hand interactions mirror the right hand - position and rotation offsets are automatically flipped when grabbing with the left hand. But you can customize the inverted axes with `leftHandRotationInvert`.
 - Using "0 0 0" for position or rotation will indicate no custom position or rotation. For rotation, this means the rotation will be the same as the object's original rotation when grabbed.
-- Rotation pivots around the controller, not the object. Set rotation before position for easier adjustments.
 - For easiest setup, enable `debug: true` and grab the object naturally. Then copy values from console (via [dev tools](https://developer.chrome.com/docs/devtools/remote-debugging) or [vr-logger](../../src/components/vr-logger/vr-logger.js) component).
 
 ## Behavior & Features
@@ -71,6 +71,7 @@ Add the `holdable` component to an entity you'd like to make grabbable, such as 
 - **No Two-Hand Support:** Only one controller can hold an object at a time.
 - **Ammo.js Support is Incomplete:** Collisions do not behave correctly after releasing an object with Ammo.js physics enabled.
 - **No Physics While Held**: Held objects are removed from the physics simulation, so they cannot collide with or affect other dynamic objects while being held.
+- **No Custom Left Hand Positioning**: Left hand position/rotation cannot be precisely customized at this time. However, you can invert the right hand positioning with `leftHandRotationInvert`, which works for most objects.
 
 ---
 
