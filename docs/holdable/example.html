@@ -47,7 +47,18 @@
 
         <!-- Sword -->
         <!-- 📝 If you see the "body not found" warning in the console, that's ok. It gets added on grab. -->
-        <a-entity class="sword" holdable="position: 0.153 -0.520 0.219; rotation: -3.2 -3.8 -90.3; leftHandRotationInvert: y; debug: true;" holdable-dynamic-body position="1 0.402 -0.685" rotation="0 0 0" sleepy="speedLimit: .7; delay: 1;" holdable-grip-body="type: dynamic; shape: none;" holdable-release-body="type: dynamic; shape: none;" shape__sword="halfExtents: 0.03 0.015 0.445; offset: -.008 0 0">
+        <a-entity class="sword"
+                holdable="position: 0.153 -0.520 0.219; rotation: -3.2 -3.8 -90.3; leftHandRotationInvert: y; debug: true;"
+                holdable-dynamic-body
+                holdable-grip-body="type: dynamic; shape: none;"
+                holdable-release-body="type: dynamic; shape: none;"
+                holdable-grip-animation="enabled: false;"
+                holdable-release-animation="enabled: false;"
+                position="3.7 1.2 -0.685"
+                rotation="-90 0 0"
+                shape__sword="halfExtents: 0.03 0.015 0.445; offset: -.008 0 0"
+                sleepy="speedLimit: .7; delay: 1;"
+                animation="property: rotation; to: -90 360 0; loop: true; dur: 10000; easing: linear">
             <!-- Actual sword mesh -->
             <a-entity gltf-model="#sword"></a-entity>
             <!-- Hidden sword scaled up to make it easier to grab -->
@@ -55,7 +66,16 @@
         </a-entity>
 
         <!-- Shield -->
-        <a-entity class="shield" holdable="position: 0.139 -0.154 0.419; rotation: -177.6 1.4 -109.7; debug: true;" holdable-dynamic-body gltf-model="#shield" position="2 0.402 -0.685"></a-entity>
+        <a-entity class="shield"
+            gltf-model="#shield"
+            holdable="position: 0.139 -0.154 0.419; rotation: -177.6 1.4 -109.7; debug: true;"
+            holdable-dynamic-body
+            holdable-grip-animation="enabled: false;"
+            holdable-release-animation="enabled: false;"
+            position="2.5 1.2 -0.685"
+            rotation="90 0 0"
+            animation="property: rotation; to: 90 360 0; loop: true; dur: 10000; easing: linear"
+        ></a-entity>
 
         <!-- Couch -->
         <a-entity class="couch" holdable body="type: static; shape: none;" position="-4.43 0 -0.68" gltf-model="#couch" shape__base="halfExtents: 1 0.175 0.57; offset: 0 .195 0" shape__back="halfExtents: 0.81 0.42 0.0875; offset: 0 .429 -.486" shape__l-arm="halfExtents: 0.115 0.3 0.57; offset: -.882 .312 0" shape__r-arm="halfExtents: 0.115 0.3 0.57; offset: .883 .312 0" shape__cushion="halfExtents: 0.76 0.42 0.0875; offset: 0 .481 -.301; orientation: -.068 0 0 .998"></a-entity>
