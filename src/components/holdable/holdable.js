@@ -49,6 +49,25 @@ AFRAME.registerComponent("holdable", {
         if (!this.el.classList.contains(intersectionClass)) {
             this.el.classList.add(intersectionClass);
         }
+        // Ensure the model's materials are double-sided to prevent issues with inside-mesh raycasting
+        const makeDoubleSided = (mesh) => {
+            if (!mesh) return;
+            mesh.traverse(node => {
+                if (node.isMesh && node.material) {
+                    node.material.side = THREE.DoubleSide;
+                    node.material.needsUpdate = true;
+                }
+            });
+        };
+        // If mesh was loaded right away (usually primitives and simple models)
+        const initialMesh = this.el.getObject3D('mesh');
+        if (initialMesh) {
+            makeDoubleSided(initialMesh);
+        }
+        // If model is loaded later (e.g. glTF models), listen for model-loaded event
+        this.el.addEventListener('model-loaded', () => {
+            makeDoubleSided(this.el.getObject3D('mesh'));
+        });
     },
     // Modifiers - Scan for grip and release modifier attributes
     scanModifierAttributes: function() {
