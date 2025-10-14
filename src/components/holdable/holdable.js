@@ -564,10 +564,9 @@ AFRAME.registerComponent("holdable", {
                 }
             });
         }
-        // Check if the hand is still inside the object's bbox. If so, don't remove the event listeners quite yet in case the user wants to grab it again right away and the raycaster is fully inside the mesh.
-        const handPos = this.holdingHand.object3D.getWorldPosition(new THREE.Vector3());
-        const bbox = new THREE.Box3().setFromObject(this.el.object3D);
-        if (!bbox.containsPoint(handPos)) {
+        // Check if the hand is still inside the mesh using raycasting. If so, don't remove the event listeners quite yet in case the user wants to grab it again right away and the hand is inside the mesh.
+        const isInside = this.isHandInsideMesh(this.holdingHand);
+        if (!isInside) {
             this.holdingHand.removeEventListener("gripdown", this.onGripDown);
             this.holdingHand.removeEventListener("gripup", this.onGripUp);
             this.holdingHand = null;
