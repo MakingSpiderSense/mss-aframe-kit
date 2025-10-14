@@ -27,7 +27,7 @@ AFRAME.registerComponent("holdable", {
         this.rayActive = false; // Flag: true when the raycaster is intersecting this object.
         this.insideMesh = {}; // Object to track if a either hand is inside the mesh.
         this.insideTestRaycaster = new THREE.Raycaster(); // Temporary raycaster for inside-mesh test.
-        this.insideTestRaycaster.far = 10;
+        this.insideTestRaycaster.far = 10; // 10 meters
         this.savedComponentStates = {}; // Modifiers - Store original component states
         this.gripModifiers = {}; // Modifiers - Store grip modifiers
         this.releaseModifiers = {}; // Modifiers - Store release modifiers
@@ -207,20 +207,10 @@ AFRAME.registerComponent("holdable", {
             hand: handEl,
             entity: this.el,
         });
-        // Get a unique identifier for the hand; prefer the id attribute, or fallback to the object's uuid.
-        const handId = handEl.getAttribute("id") || handEl.object3D.uuid;
-        // Perform the inside-mesh test:
-        const origin = handEl.object3D.getWorldPosition(new THREE.Vector3());
-        const direction = new THREE.Vector3();
-        handEl.object3D.getWorldDirection(direction);
-        this.insideTestRaycaster.set(origin, direction.normalize());
-        // Intersect the mesh (using recursive true in case the mesh is nested).
-        const intersections = this.insideTestRaycaster.intersectObject(this.el.object3D, true);
-        // Odd number of intersections implies the hand is inside.
-        const isInside = intersections.length % 2 === 1;
-        this.insideMesh[handId] = isInside;
-        // If not inside mesh and the object is not held by this hand, remove event listeners.
-        if (!this.insideMesh[handId] && !(this.isHeld && handEl === this.holdingHand)) {
+        // Test if the hand is inside the mesh
+        const isInside = this.isHandInsideMesh(handEl);
+        // If the hand is not inside the mesh, and the object is not currently held (or is held by some other hand), remove event listeners
+        if (!isInside && !(this.isHeld && handEl === this.holdingHand)) {
             handEl.removeEventListener("gripdown", this.onGripDown);
             handEl.removeEventListener("gripup", this.onGripUp);
         }
@@ -582,6 +572,21 @@ AFRAME.registerComponent("holdable", {
             this.holdingHand.removeEventListener("gripup", this.onGripUp);
             this.holdingHand = null;
         }
+    },
+    isHandInsideMesh: function(handEl) {
+        // Get a unique identifier for the hand. Preference for id attribute, but fallback to the object's uuid.
+        const handId = handEl.getAttribute("id") || handEl.object3D.uuid;
+        const origin = handEl.object3D.getWorldPosition(new THREE.Vector3()); // Get the world position of the hand
+        const direction = new THREE.Vector3(); // Set up a vector for the direction
+        handEl.object3D.getWorldDirection(direction); // Get the forward direction of the hand.
+        this.insideTestRaycaster.set(origin, direction.normalize());
+        // Intersect the mesh (using recursive true in case the mesh is nested).
+        const intersections = this.insideTestRaycaster.intersectObject(this.el.object3D, true);
+        console.log("Number of intersections for hand " + handId + ": " + intersections.length);
+        // Odd number of intersections implies the hand is inside.
+        const isInside = intersections.length % 2 === 1;
+        this.insideMesh[handId] = isInside;
+        return isInside;
     },
     remove: function () {
         this.el.removeEventListener("raycaster-intersected", this.onHitStart);
