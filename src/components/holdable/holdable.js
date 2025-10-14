@@ -12,6 +12,7 @@ AFRAME.registerComponent("holdable", {
         position: { type: "vec3", default: { x: 0, y: 0, z: 0 } },
         rotation: { type: "vec3", default: { x: 0, y: 0, z: 0 } },
         leftHandRotationInvert: {type: 'array', default: ['y','z']}, // Pick the rotation axes to invert for left hand (if using local-custom rotation)
+        insideMeshDetection: { type: "boolean", default: true }, // Enable/disable inside-mesh raycast detection
         debug: { type: "boolean", default: false }, // Show debug logs in console (helpful for getting grab position/rotation)
     },
     // dependencies: ['raycaster'], // This causes huge performance issues and is not needed at all, but good for benchmarking performance of models
@@ -50,24 +51,26 @@ AFRAME.registerComponent("holdable", {
             this.el.classList.add(intersectionClass);
         }
         // Ensure the model's materials are double-sided to prevent issues with inside-mesh raycasting
-        const makeDoubleSided = (mesh) => {
-            if (!mesh) return;
-            mesh.traverse(node => {
-                if (node.isMesh && node.material) {
-                    node.material.side = THREE.DoubleSide;
-                    node.material.needsUpdate = true;
-                }
+        if (this.data.insideMeshDetection) {
+            const makeDoubleSided = (mesh) => {
+                if (!mesh) return;
+                mesh.traverse(node => {
+                    if (node.isMesh && node.material) {
+                        node.material.side = THREE.DoubleSide;
+                        node.material.needsUpdate = true;
+                    }
+                });
+            };
+            // If mesh was loaded right away (usually primitives and simple models)
+            const initialMesh = this.el.getObject3D('mesh');
+            if (initialMesh) {
+                makeDoubleSided(initialMesh);
+            }
+            // If model is loaded later (e.g. glTF models), listen for model-loaded event
+            this.el.addEventListener('model-loaded', () => {
+                makeDoubleSided(this.el.getObject3D('mesh'));
             });
-        };
-        // If mesh was loaded right away (usually primitives and simple models)
-        const initialMesh = this.el.getObject3D('mesh');
-        if (initialMesh) {
-            makeDoubleSided(initialMesh);
         }
-        // If model is loaded later (e.g. glTF models), listen for model-loaded event
-        this.el.addEventListener('model-loaded', () => {
-            makeDoubleSided(this.el.getObject3D('mesh'));
-        });
     },
     // Modifiers - Scan for grip and release modifier attributes
     scanModifierAttributes: function() {
@@ -208,7 +211,10 @@ AFRAME.registerComponent("holdable", {
             entity: this.el,
         });
         // Test if the hand is inside the mesh
-        const isInside = this.isHandInsideMesh(handEl);
+        let isInside = false;
+        if (this.data.insideMeshDetection) {
+            isInside = this.isHandInsideMesh(handEl);
+        }
         // If the hand is not inside the mesh, and the object is not currently held (or is held by some other hand), remove event listeners
         if (!isInside && !(this.isHeld && handEl === this.holdingHand)) {
             handEl.removeEventListener("gripdown", this.onGripDown);
@@ -565,7 +571,10 @@ AFRAME.registerComponent("holdable", {
             });
         }
         // Check if the hand is still inside the mesh using raycasting. If so, don't remove the event listeners quite yet in case the user wants to grab it again right away and the hand is inside the mesh.
-        const isInside = this.isHandInsideMesh(this.holdingHand);
+        let isInside = false;
+        if (this.data.insideMeshDetection) {
+            isInside = this.isHandInsideMesh(this.holdingHand);
+        }
         if (!isInside) {
             this.holdingHand.removeEventListener("gripdown", this.onGripDown);
             this.holdingHand.removeEventListener("gripup", this.onGripUp);
@@ -581,7 +590,7 @@ AFRAME.registerComponent("holdable", {
         this.insideTestRaycaster.set(origin, direction.normalize());
         // Intersect the mesh (using recursive true in case the mesh is nested).
         const intersections = this.insideTestRaycaster.intersectObject(this.el.object3D, true);
-        console.log("Number of intersections for hand " + handId + ": " + intersections.length);
+            // console.log("Number of intersections for hand " + handId + ": " + intersections.length);
         // Odd number of intersections implies the hand is inside.
         const isInside = intersections.length % 2 === 1;
         this.insideMesh[handId] = isInside;
