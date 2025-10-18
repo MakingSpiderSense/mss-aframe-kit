@@ -217,6 +217,18 @@ AFRAME.registerComponent("holdable", {
         if (!isInside && !(this.isHeld && handEl === this.holdingHand)) {
             handEl.removeEventListener("gripdown", this.onGripDown);
             handEl.removeEventListener("gripup", this.onGripUp);
+        } else {
+            // If it was detected that the hand is inside the mesh, do a delayed re-check after 200 ms to be sure
+            if (isInside && this.data.insideMeshDetection) {
+                setTimeout(() => {
+                    isInside = this.isHandInsideMesh(handEl);
+                    // If not inside or object is held by another hand, remove listeners
+                    if (!isInside && !(this.isHeld && handEl === this.holdingHand)) {
+                        handEl.removeEventListener("gripdown", this.onGripDown);
+                        handEl.removeEventListener("gripup", this.onGripUp);
+                    }
+                }, 200);
+            }
         }
         this.rayActive = false;
     },
