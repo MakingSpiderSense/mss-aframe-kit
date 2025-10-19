@@ -28,12 +28,13 @@ Add the `holdable` component to an entity you'd like to make grabbable, such as 
 
 ## Properties
 
-| Parameter              | Type  | Description                                                                                    | Default | Options                              |
-| ---------------------- | ----- | ---------------------------------------------------------------------------------------------- | ------- | ------------------------------------ |
-| position               | vec3  | Local offset position where the object should be held (relative to controller).                | `0 0 0` | Any position coordinates (in meters) |
-| rotation               | vec3  | Local offset rotation applied when held (relative to controller).                              | `0 0 0` | Any rotation angles (in degrees)     |
-| leftHandRotationInvert | array | If using custom position or rotation, choose the axes to invert for left hand.                 | `y, z`  | `x`, `y`, `z` (comma-separated)      |
-| debug                  | bool  | Outputs the relative position and rotation of held objects. Useful for setting custom offsets. | `false` | `true`, `false`                      |
+| Parameter              | Type    | Description                                                                                         | Default | Options                              |
+| ---------------------- | ------- | --------------------------------------------------------------------------------------------------- | ------- | ------------------------------------ |
+| position               | vec3    | Local offset position where the object should be held (relative to controller).                     | `0 0 0` | Any position coordinates (in meters) |
+| rotation               | vec3    | Local offset rotation applied when held (relative to controller).                                   | `0 0 0` | Any rotation angles (in degrees)     |
+| leftHandRotationInvert | array   | If using custom position or rotation, choose the axes to invert for left hand.                      | `y, z`  | `x`, `y`, `z` (comma-separated)      |
+| insideMeshDetection    | boolean | Enables detection of controller inside mesh by making materials double-sided (impacts performance). | `true`  | `true`, `false`                      |
+| debug                  | boolean | Outputs the relative position and rotation of held objects. Useful for setting custom offsets.      | `false` | `true`, `false`                      |
 
 **Notes**:
 

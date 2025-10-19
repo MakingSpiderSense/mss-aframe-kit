@@ -11,7 +11,8 @@ AFRAME.registerComponent("holdable", {
     schema: {
         position: { type: "vec3", default: { x: 0, y: 0, z: 0 } },
         rotation: { type: "vec3", default: { x: 0, y: 0, z: 0 } },
-        leftHandRotationInvert: {type: 'array', default: ['y','z']}, // Pick the rotation axes to invert for left hand (if using local-custom rotation)
+        leftHandRotationInvert: { type: "array", default: ["y", "z"] }, // Pick the rotation axes to invert for left hand (if using local-custom rotation)
+        insideMeshDetection: { type: "boolean", default: true }, // Enable/disable inside-mesh raycast detection
         debug: { type: "boolean", default: false }, // Show debug logs in console (helpful for getting grab position/rotation)
     },
     // dependencies: ['raycaster'], // This causes huge performance issues and is not needed at all, but good for benchmarking performance of models
@@ -27,7 +28,7 @@ AFRAME.registerComponent("holdable", {
         this.rayActive = false; // Flag: true when the raycaster is intersecting this object.
         this.insideMesh = {}; // Object to track if a either hand is inside the mesh.
         this.insideTestRaycaster = new THREE.Raycaster(); // Temporary raycaster for inside-mesh test.
-        this.insideTestRaycaster.far = 10;
+        this.insideTestRaycaster.far = 10; // 10 meters
         this.savedComponentStates = {}; // Modifiers - Store original component states
         this.gripModifiers = {}; // Modifiers - Store grip modifiers
         this.releaseModifiers = {}; // Modifiers - Store release modifiers
@@ -49,22 +50,43 @@ AFRAME.registerComponent("holdable", {
         if (!this.el.classList.contains(intersectionClass)) {
             this.el.classList.add(intersectionClass);
         }
+        // Ensure the model's materials are double-sided to prevent issues with inside-mesh raycasting
+        if (this.data.insideMeshDetection) {
+            const makeDoubleSided = (mesh) => {
+                if (!mesh) return;
+                mesh.traverse((node) => {
+                    if (node.isMesh && node.material) {
+                        node.material.side = THREE.DoubleSide;
+                        node.material.needsUpdate = true;
+                    }
+                });
+            };
+            // If mesh was loaded right away (usually primitives and simple models)
+            const initialMesh = this.el.getObject3D("mesh");
+            if (initialMesh) {
+                makeDoubleSided(initialMesh);
+            }
+            // If model is loaded later (e.g. glTF models), listen for model-loaded event
+            this.el.addEventListener("model-loaded", () => {
+                makeDoubleSided(this.el.getObject3D("mesh"));
+            });
+        }
     },
     // Modifiers - Scan for grip and release modifier attributes
-    scanModifierAttributes: function() {
+    scanModifierAttributes: function () {
         const attributes = this.el.getAttributeNames();
         for (let attr of attributes) {
             // Check for grip modifiers (holdable-grip-componentName)
-            if (attr.startsWith('holdable-grip-')) {
-                const componentName = attr.substring('holdable-grip-'.length); // Remove the prefix
+            if (attr.startsWith("holdable-grip-")) {
+                const componentName = attr.substring("holdable-grip-".length); // Remove the prefix
                 const attributeString = this.el.getAttribute(attr);
                 // Parse the string into an object
                 const parsedProps = this.parseAttributeString(attributeString);
                 this.gripModifiers[componentName] = parsedProps;
             }
             // Check for release modifiers (holdable-release-componentName)
-            else if (attr.startsWith('holdable-release-')) {
-                const componentName = attr.substring('holdable-release-'.length); // Remove the prefix
+            else if (attr.startsWith("holdable-release-")) {
+                const componentName = attr.substring("holdable-release-".length); // Remove the prefix
                 const attributeString = this.el.getAttribute(attr);
                 // Parse the string into an object
                 const parsedProps = this.parseAttributeString(attributeString);
@@ -73,28 +95,28 @@ AFRAME.registerComponent("holdable", {
         }
     },
     // Modifiers - Parse an A-Frame attribute string into a JavaScript object or direct value
-    parseAttributeString: function(attributeString) {
+    parseAttributeString: function (attributeString) {
         // Handle flag components (e.g. light)
-        if (!attributeString || attributeString.trim() === '') {
+        if (!attributeString || attributeString.trim() === "") {
             return { __is_flag: true };
         }
         // If the string doesn't contain a colon, it's a direct value (e.g. scale="3 1 2")
-        if (attributeString.indexOf(':') === -1) {
+        if (attributeString.indexOf(":") === -1) {
             return { __direct_value: attributeString.trim() };
         }
         const result = {};
         // Split by semicolons and then by colons to get key-value pairs (e.g. material="color: red; opacity: 0.5")
-        const kvPairs = attributeString.split(';');
+        const kvPairs = attributeString.split(";");
         for (let kvPair of kvPairs) {
             if (!kvPair.trim()) continue;
             // Split by the first colon to separate key and value
-            const colonIndex = kvPair.indexOf(':');
+            const colonIndex = kvPair.indexOf(":");
             if (colonIndex === -1) continue;
             const key = kvPair.substring(0, colonIndex).trim();
             let value = kvPair.substring(colonIndex + 1).trim();
             // Convert value to appropriate type
-            if (value === 'true') value = true;
-            else if (value === 'false') value = false;
+            if (value === "true") value = true;
+            else if (value === "false") value = false;
             else if (!isNaN(parseFloat(value)) && isFinite(value)) {
                 value = parseFloat(value);
             }
@@ -104,7 +126,7 @@ AFRAME.registerComponent("holdable", {
     },
     // Modifiers - Apply component modifications handling different component types
     // Note: newProps can be a flag component (e.g., __is_flag: true), a direct value component (e.g., __direct_value: "3 1 2"), or a property-based component with many properties (e.g., { prop1: "value1", prop2: "value2" })
-    applyComponentModifications: function(componentName, newProps, saveOriginal = false) {
+    applyComponentModifications: function (componentName, newProps, saveOriginal = false) {
         // Skip if new props is empty or undefined
         if (!newProps || Object.keys(newProps).length === 0) return;
         // Save original state if needed and not already saved
@@ -119,13 +141,11 @@ AFRAME.registerComponent("holdable", {
         // Handle different types of component values
         if (newProps.__is_flag) {
             // It's a flag component, just add it without values
-            this.el.setAttribute(componentName, '');
-        }
-        else if (newProps.__direct_value) {
+            this.el.setAttribute(componentName, "");
+        } else if (newProps.__direct_value) {
             // It's a direct value component like position="3 1 2"
             this.el.setAttribute(componentName, newProps.__direct_value);
-        }
-        else {
+        } else {
             // It's a property-based component
             // Apply each property individually to ensure it's properly set
             for (const propName in newProps) {
@@ -134,7 +154,7 @@ AFRAME.registerComponent("holdable", {
         }
     },
     // Modifiers - Restore original component state
-    restoreComponentState: function(componentName) {
+    restoreComponentState: function (componentName) {
         if (componentName in this.savedComponentStates) {
             const originalState = this.savedComponentStates[componentName];
             if (originalState === null) {
@@ -188,22 +208,27 @@ AFRAME.registerComponent("holdable", {
             hand: handEl,
             entity: this.el,
         });
-        // Get a unique identifier for the hand; prefer the id attribute, or fallback to the object's uuid.
-        const handId = handEl.getAttribute("id") || handEl.object3D.uuid;
-        // Perform the inside-mesh test:
-        const origin = handEl.object3D.getWorldPosition(new THREE.Vector3());
-        const direction = new THREE.Vector3();
-        handEl.object3D.getWorldDirection(direction);
-        this.insideTestRaycaster.set(origin, direction.normalize());
-        // Intersect the mesh (using recursive true in case the mesh is nested).
-        const intersections = this.insideTestRaycaster.intersectObject(this.el.object3D, true);
-        // Odd number of intersections implies the hand is inside.
-        const isInside = intersections.length % 2 === 1;
-        this.insideMesh[handId] = isInside;
-        // If not inside mesh and the object is not held by this hand, remove event listeners.
-        if (!this.insideMesh[handId] && !(this.isHeld && handEl === this.holdingHand)) {
+        // Test if the hand is inside the mesh
+        let isInside = false;
+        if (this.data.insideMeshDetection) {
+            isInside = this.isHandInsideMesh(handEl);
+        }
+        // If the hand is not inside the mesh, and the object is not currently held (or is held by some other hand), remove event listeners
+        if (!isInside && !(this.isHeld && handEl === this.holdingHand)) {
             handEl.removeEventListener("gripdown", this.onGripDown);
             handEl.removeEventListener("gripup", this.onGripUp);
+        } else {
+            // If it was detected that the hand is inside the mesh, do a delayed re-check after 200 ms to be sure
+            if (isInside && this.data.insideMeshDetection) {
+                setTimeout(() => {
+                    isInside = this.isHandInsideMesh(handEl);
+                    // If not inside or object is held by another hand, remove listeners
+                    if (!isInside && !(this.isHeld && handEl === this.holdingHand)) {
+                        handEl.removeEventListener("gripdown", this.onGripDown);
+                        handEl.removeEventListener("gripup", this.onGripUp);
+                    }
+                }, 200);
+            }
         }
         this.rayActive = false;
     },
@@ -430,7 +455,7 @@ AFRAME.registerComponent("holdable", {
         this.el.object3D.updateMatrixWorld(true);
     },
     // Generate debug grab attributes for easy copy-paste configuration for specific grab position/rotation
-    generateDebugGrabAttributes: function(pos, quat) {
+    generateDebugGrabAttributes: function (pos, quat) {
         const eulerForAttr = new THREE.Euler().setFromQuaternion(quat, "YXZ"); // Convert quaternion to Euler angles
         // Convert radians to degrees
         const rotX = THREE.MathUtils.radToDeg(eulerForAttr.x);
@@ -450,7 +475,7 @@ AFRAME.registerComponent("holdable", {
         // Output copy-pasteable line to the console
         const posStr = posForAttr.x.toFixed(3) + " " + posForAttr.y.toFixed(3) + " " + posForAttr.z.toFixed(3);
         const rotStr = rotX.toFixed(1) + " " + rotY.toFixed(1) + " " + rotZ.toFixed(1);
-        console.log('holdable="position: ' + posStr + '; rotation: ' + rotStr + '"');
+        console.log(`holdable="position: ${posStr}; rotation: ${rotStr}"`);
     },
     onGripUp: function (evt) {
         if (!this.isHeld || !this.holdingHand) return;
@@ -512,7 +537,7 @@ AFRAME.registerComponent("holdable", {
             this.applyComponentModifications(
                 componentName,
                 this.releaseModifiers[componentName],
-                false // Don't save original state
+                false, // Don't save original state
             );
         }
         // Modifiers - Restore original states for components that don't have a release modifier
@@ -555,14 +580,31 @@ AFRAME.registerComponent("holdable", {
                 }
             });
         }
-        // Check if the hand is still inside the object's bbox. If so, don't remove the event listeners quite yet in case the user wants to grab it again right away and the raycaster is fully inside the mesh.
-        const handPos = this.holdingHand.object3D.getWorldPosition(new THREE.Vector3());
-        const bbox = new THREE.Box3().setFromObject(this.el.object3D);
-        if (!bbox.containsPoint(handPos)) {
+        // Check if the hand is still inside the mesh using raycasting. If so, don't remove the event listeners quite yet in case the user wants to grab it again right away and the hand is inside the mesh.
+        let isInside = false;
+        if (this.data.insideMeshDetection) {
+            isInside = this.isHandInsideMesh(this.holdingHand);
+        }
+        if (!isInside) {
             this.holdingHand.removeEventListener("gripdown", this.onGripDown);
             this.holdingHand.removeEventListener("gripup", this.onGripUp);
             this.holdingHand = null;
         }
+    },
+    isHandInsideMesh: function (handEl) {
+        // Get a unique identifier for the hand. Preference for id attribute, but fallback to the object's uuid.
+        const handId = handEl.getAttribute("id") || handEl.object3D.uuid;
+        const origin = handEl.object3D.getWorldPosition(new THREE.Vector3()); // Get the world position of the hand
+        const direction = new THREE.Vector3(); // Set up a vector for the direction
+        handEl.object3D.getWorldDirection(direction); // Get the forward direction of the hand.
+        this.insideTestRaycaster.set(origin, direction.normalize());
+        // Intersect the mesh (using recursive true in case the mesh is nested).
+        const intersections = this.insideTestRaycaster.intersectObject(this.el.object3D, true);
+            // console.log("Number of intersections for hand " + handId + ": " + intersections.length);
+        // Odd number of intersections implies the hand is inside.
+        const isInside = intersections.length % 2 === 1;
+        this.insideMesh[handId] = isInside;
+        return isInside;
     },
     remove: function () {
         this.el.removeEventListener("raycaster-intersected", this.onHitStart);
