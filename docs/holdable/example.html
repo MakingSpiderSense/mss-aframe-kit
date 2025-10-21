@@ -146,6 +146,44 @@
                 });
             }
         });
+
+        // Info Board - Used to describe holdable objects
+        AFRAME.registerComponent('info-board', {
+            schema: {
+                title: {type: 'string', default: 'Add Title Here'},
+                details: {type: 'string', default: '- Point 1\n- Point 2'}
+            },
+            init: function () {
+                const el = this.el;
+                const data = this.data;
+                // Create the background plane
+                const plane = document.createElement('a-plane');
+                plane.setAttribute('color', '#ffffff');
+                plane.setAttribute('height', '0.6');
+                plane.setAttribute('width', '1');
+                plane.setAttribute('opacity', '0.9');
+                plane.setAttribute('material', 'side: double');
+                el.appendChild(plane);
+                // Heading
+                const title = document.createElement('a-text');
+                title.setAttribute('value', data.title);
+                title.setAttribute('color', '#222');
+                title.setAttribute('width', '1.7');
+                title.setAttribute('position', '-0.4 0.2 0.01');
+                title.setAttribute('anchor', 'left');
+                title.setAttribute('font', 'mozillavr');
+                el.appendChild(title);
+                // Body text
+                const bodyText = document.createElement('a-text');
+                bodyText.setAttribute('value', data.details);
+                bodyText.setAttribute('color', '#222');
+                bodyText.setAttribute('width', '1.5');
+                bodyText.setAttribute('position', '-0.4 .05 0.01');
+                bodyText.setAttribute('anchor', 'left');
+                bodyText.setAttribute('font', 'mozillavr');
+                el.appendChild(bodyText);
+            }
+            });
     </script>
 
 </body>
