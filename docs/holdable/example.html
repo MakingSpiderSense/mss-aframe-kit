@@ -26,6 +26,9 @@
             <a-asset-item id="basketball" src="assets/basketball_blue.glb"></a-asset-item>
             <a-asset-item id="ice_cube" src="assets/ice_cube.glb"></a-asset-item>
             <a-asset-item id="couch" src="assets/couch.glb"></a-asset-item>
+            <a-asset-item id="panel_left" src="assets/panel_left.glb"></a-asset-item>
+            <a-asset-item id="panel_middle" src="assets/panel_middle.glb"></a-asset-item>
+            <a-asset-item id="panel_right" src="assets/panel_right.glb"></a-asset-item>
             <a-asset-item id="sword" src="assets/sword.glb"></a-asset-item>
             <a-asset-item id="shield" src="assets/shield.glb"></a-asset-item>
         </a-assets>
@@ -44,6 +47,16 @@
 
         <!-- Ice Cube -->
         <a-box class="ice_cube" holdable body="type: static; shape: box;" gltf-model="#ice_cube" depth=".8" height=".8" width=".8" position="-2.188 0.402 -0.685"></a-box>
+
+        <!-- Canvas Display -->
+        <a-entity class="canvas-art" position="6.8 1.5 -.33">
+            <!-- Wall -->
+            <a-box position="0 0 -0.10115" static-body color="#444" material="color: #7f1b34" geometry="depth: 0.15; height: 3; width: 4"></a-box>
+            <!-- 3 Panels -->
+            <a-entity gltf-model="#panel_left" position="-.63 0 0" body="type: static; shape: none;" shape__collision="halfExtents: 0.3 0.54 0.025; offset: 0 0 0" static-body holdable holdable-dynamic-body></a-entity>
+            <a-entity gltf-model="#panel_middle" position="0 0 0" body="type: static; shape: none;" shape__collision="halfExtents: 0.3 0.6 0.025; offset: 0 0 0" holdable holdable-dynamic-body></a-entity>
+            <a-entity gltf-model="#panel_right" position=".63 0 0" body="type: static; shape: none;" shape__collision="halfExtents: 0.3 0.54 0.025; offset: 0 0 0" static-body holdable holdable-dynamic-body></a-entity>
+        </a-entity>
 
         <!-- Sword -->
         <!-- 📝 If you see the "body not found" warning in the console, that's ok. It gets added on grab. -->
