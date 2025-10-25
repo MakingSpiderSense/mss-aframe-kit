@@ -62,7 +62,7 @@
         <!-- Example: Shield -->
         <a-entity class="shield"
             gltf-model="#shield"
-            holdable="position: 0.139 -0.154 0.419; rotation: -177.6 1.4 -109.7; debug: true;"
+            holdable="position: 0.139 -0.154 0.419; rotation: -177.6 1.4 -109.7; insideMeshDetection: false;"
             holdable-dynamic-body
             holdable-grip-animation="enabled: false;"
             holdable-release-animation="enabled: false;"
@@ -74,7 +74,7 @@
         <!-- Example: Sword -->
         <!-- 📝 If you see the "body not found" warning in the console, that's ok. It gets added on grab. -->
         <a-entity class="sword"
-                holdable="position: 0.153 -0.520 0.219; rotation: -3.2 -3.8 -90.3; leftHandRotationInvert: y; debug: true;"
+                holdable="position: 0.153 -0.520 0.219; rotation: -3.2 -3.8 -90.3; leftHandRotationInvert: y;"
                 holdable-dynamic-body
                 holdable-grip-body="type: dynamic; shape: none;"
                 holdable-release-body="type: dynamic; shape: none;"
