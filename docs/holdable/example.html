@@ -48,8 +48,22 @@
         <!-- Example: Ice Cube -->
         <a-box class="ice_cube" holdable body="type: static; shape: box;" gltf-model="#ice_cube" depth=".8" height=".8" width=".8" position="-3.5 0.402 -.5"></a-box>
 
-        <!-- Box -->
-        <a-box class="box-b" holdable dynamic-body sleepy="speedLimit: .7; delay: 1;" position="-1.8 1 -.5" scale=".2 .2 .2" color="#53e4e1"></a-box>
+        <!-- Example: Boxes -->
+        <!-- Box with prop change on grip and release -->
+        <a-box class="box-wild" position="-1.8 1 -.5" width=".2" height=".2" depth=".2"
+            holdable
+            dynamic-body
+            material="color: #97dba1"
+            holdable-grip-material="color: #e557d9; wireframe: true; opacity: .1; side: double;"
+            holdable-release-material="color: #c657e5; wireframe: false; opacity: .5; side: double;"
+            holdable-grip-scale="1.5 1.5 1.5"
+            holdable-release-scale="1.5 1.5 1.5"
+        ></a-box>
+        <!-- Regular boxes -->
+        <a-box class="box-normal-1" holdable static-body sleepy="speedLimit: .7; delay: 1;" position="-1.675 .1 -.56" width=".2" height=".2" depth=".2" color="#e8eaeb"></a-box>
+        <a-box class="box-normal-2" holdable static-body sleepy="speedLimit: .7; delay: 1;" position="-2 .1 -.6" width=".2" height=".2" depth=".2" color="#e8eaeb"></a-box>
+        <a-box class="box-normal-3" holdable static-body sleepy="speedLimit: .7; delay: 1;" position="-1.8 .1 -.8" width=".2" height=".2" depth=".2" color="#e8eaeb"></a-box>
+        <a-box class="box-normal-4" holdable static-body sleepy="speedLimit: .7; delay: 1;" position="-1.83 .33 -.7" width=".2" height=".2" depth=".2" color="#e8eaeb"></a-box>
 
         <!-- Example: Robot -->
         <a-entity class="sphere-robot" position="-.5 1.3 -.5" rotation="0 5 0" holdable gltf-model="#sphere_robot"
