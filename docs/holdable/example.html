@@ -40,17 +40,37 @@
         <a-box position="0 -.49 0" width="200" height="1" depth="200" static-body visible="false"></a-box>
 
         <!-- Example: Couch -->
-        <a-entity class="couch" holdable body="type: static; shape: none;" position="-7.4 0 -0.5" gltf-model="#couch" shape__base="halfExtents: 1 0.175 0.57; offset: 0 .195 0" shape__back="halfExtents: 0.81 0.42 0.0875; offset: 0 .429 -.486" shape__l-arm="halfExtents: 0.115 0.3 0.57; offset: -.882 .312 0" shape__r-arm="halfExtents: 0.115 0.3 0.57; offset: .883 .312 0" shape__cushion="halfExtents: 0.76 0.42 0.0875; offset: 0 .481 -.301; orientation: -.068 0 0 .998"></a-entity>
+        <a-entity class="couch"
+            holdable
+            gltf-model="#couch"
+            body="type: static; shape: none;"
+            shape__base="halfExtents: 1 0.175 0.57; offset: 0 .195 0" shape__back="halfExtents: 0.81 0.42 0.0875; offset: 0 .429 -.486" shape__l-arm="halfExtents: 0.115 0.3 0.57; offset: -.882 .312 0" shape__r-arm="halfExtents: 0.115 0.3 0.57; offset: .883 .312 0" shape__cushion="halfExtents: 0.76 0.42 0.0875; offset: 0 .481 -.301; orientation: -.068 0 0 .998"
+            position="-7.4 0 -0.5"
+        ></a-entity>
 
         <!-- Example: Basketball -->
-        <a-sphere class="basketball" radius=".11" holdable="position: -0.032 -0.126 0.132; rotation: -83.6 117.9 -114.5" body="type: dynamic; shape: sphere;" position="-5 5 -.5" gltf-model="#basketball"></a-sphere>
+        <a-sphere class="basketball"
+            gltf-model="#basketball"
+            holdable="position: -0.032 -0.126 0.132; rotation: -83.6 117.9 -114.5"
+            body="type: dynamic; shape: sphere;"
+            radius=".11"
+            position="-5 5 -.5"
+        ></a-sphere>
 
         <!-- Example: Ice Cube -->
-        <a-box class="ice_cube" holdable body="type: static; shape: box;" gltf-model="#ice_cube" depth=".8" height=".8" width=".8" position="-3.5 0.402 -.5"></a-box>
+        <a-box class="ice_cube"
+            gltf-model="#ice_cube"
+            holdable
+            body="type: static; shape: box;"
+            depth=".8"
+            height=".8"
+            width=".8"
+            position="-3.5 0.402 -.5"
+        ></a-box>
 
         <!-- Example: Boxes -->
         <!-- Box with prop change on grip and release -->
-        <a-box class="box-wild" position="-1.8 1 -.5" width=".2" height=".2" depth=".2"
+        <a-box class="box-wild"
             holdable
             dynamic-body
             material="color: #97dba1"
@@ -58,6 +78,10 @@
             holdable-release-material="color: #c657e5; wireframe: false; opacity: .5; side: double;"
             holdable-grip-scale="1.5 1.5 1.5"
             holdable-release-scale="1.5 1.5 1.5"
+            position="-1.8 1 -.5"
+            width=".2"
+            height=".2"
+            depth=".2"
         ></a-box>
         <!-- Regular boxes -->
         <a-box class="box-normal-1" holdable dynamic-body sleepy="speedLimit: .7; delay: 1;" position="-1.675 .1 -.56" width=".2" height=".2" depth=".2" color="#e8eaeb"></a-box>
@@ -66,11 +90,14 @@
         <a-box class="box-normal-4" holdable dynamic-body sleepy="speedLimit: .7; delay: 1;" position="-1.83 .4 -.7" rotation="0 10 30" width=".2" height=".2" depth=".2" color="#e8eaeb"></a-box>
 
         <!-- Example: Robot -->
-        <a-entity class="sphere-robot" position="-.5 1.3 -.5" rotation="0 5 0" holdable gltf-model="#sphere_robot"
+        <a-entity class="sphere-robot"
+            holdable gltf-model="#sphere_robot"
             animation-mixer
-            face-user-on-release
             holdable-grip-animation-mixer="timeScale: 0;"
             holdable-grip-animation__rotate="enabled: false;"
+            face-user-on-release
+            position="-.5 1.3 -.5"
+            rotation="0 5 0"
         ></a-entity>
 
         <!-- Example: Shield -->
@@ -78,11 +105,11 @@
             gltf-model="#shield"
             holdable="position: 0.139 -0.154 0.419; rotation: -177.6 1.4 -109.7; insideMeshDetection: false;"
             holdable-dynamic-body
+            animation="property: rotation; to: 90 360 0; loop: true; dur: 10000; easing: linear"
             holdable-grip-animation="enabled: false;"
             holdable-release-animation="enabled: false;"
             position="1.2 1.2 -.5"
             rotation="90 0 0"
-            animation="property: rotation; to: 90 360 0; loop: true; dur: 10000; easing: linear"
         ></a-entity>
 
         <!-- Example: Sword -->
@@ -90,29 +117,51 @@
         <a-entity class="sword"
                 holdable="position: 0.153 -0.520 0.219; rotation: -3.2 -3.8 -90.3; leftHandRotationInvert: y;"
                 holdable-dynamic-body
+                shape__sword="halfExtents: 0.03 0.015 0.445; offset: -.008 0 0"
                 holdable-grip-body="type: dynamic; shape: none;"
                 holdable-release-body="type: dynamic; shape: none;"
+                animation="property: rotation; to: -90 360 0; loop: true; dur: 10000; easing: linear"
                 holdable-grip-animation="enabled: false;"
                 holdable-release-animation="enabled: false;"
+                sleepy="speedLimit: .7; delay: 1;"
                 position="2.9 1.2 -0.685"
                 rotation="-90 0 0"
-                shape__sword="halfExtents: 0.03 0.015 0.445; offset: -.008 0 0"
-                sleepy="speedLimit: .7; delay: 1;"
-                animation="property: rotation; to: -90 360 0; loop: true; dur: 10000; easing: linear">
+            >
             <!-- Actual sword mesh -->
             <a-entity gltf-model="#sword"></a-entity>
             <!-- Hidden sword scaled up to make it easier to grab -->
-            <a-entity gltf-model="#sword" visible="false" scale="8 8 1.2" class="interactable"></a-entity>
+            <a-entity gltf-model="#sword" class="interactable" visible="false" scale="8 8 1.2"></a-entity>
         </a-entity>
 
         <!-- Example: Canvas Display -->
         <a-entity class="canvas-art" position="6.5 1.5 -.5">
             <!-- Wall -->
-            <a-box position="0 0 -0.10115" static-body color="#444" material="color: #7f1b34" geometry="depth: 0.15; height: 3; width: 4"></a-box>
+            <a-box position="0 0 -0.10115" static-body material="color: #7f1b34" geometry="depth: 0.15; height: 3; width: 4"></a-box>
             <!-- 3 Panels -->
-            <a-entity gltf-model="#panel_left" position="-.63 0 0" body="type: static; shape: none;" shape__collision="halfExtents: 0.3 0.54 0.025; offset: 0 0 0" holdable holdable-dynamic-body></a-entity>
-            <a-entity gltf-model="#panel_middle" position="0 0 0" body="type: static; shape: none;" shape__collision="halfExtents: 0.3 0.6 0.025; offset: 0 0 0" holdable holdable-dynamic-body></a-entity>
-            <a-entity gltf-model="#panel_right" position=".63 0 0" body="type: static; shape: none;" shape__collision="halfExtents: 0.3 0.54 0.025; offset: 0 0 0" holdable holdable-dynamic-body></a-entity>
+            <a-entity class="panel-left"
+                gltf-model="#panel_left"
+                holdable
+                holdable-dynamic-body
+                body="type: static; shape: none;"
+                shape__collision="halfExtents: 0.3 0.54 0.025; offset: 0 0 0"
+                position="-.63 0 0"
+            ></a-entity>
+            <a-entity class="panel-middle"
+                gltf-model="#panel_middle"
+                holdable
+                holdable-dynamic-body
+                body="type: static; shape: none;"
+                shape__collision="halfExtents: 0.3 0.6 0.025; offset: 0 0 0"
+                position="0 0 0"
+            ></a-entity>
+            <a-entity class="panel-right"
+                gltf-model="#panel_right"
+                holdable
+                holdable-dynamic-body
+                body="type: static; shape: none;"
+                shape__collision="halfExtents: 0.3 0.54 0.025; offset: 0 0 0"
+                position=".63 0 0"
+            ></a-entity>
         </a-entity>
 
         <!-- Example: Robot -->
