@@ -34,10 +34,10 @@
         </a-assets>
 
         <!-- Environment -->
-        <a-entity class="env-dream" environment="preset: tron; seed: 3;"></a-entity>
+        <a-entity class="env-dream" environment="preset: tron; seed: 3; dressing: none; ground: flat;"></a-entity>
 
-        <!-- Add a fake floor - this is temporary until I can work out the floor physics with environment component -->
-        <a-box position="0 0 0" width="200" height="0.1" depth="200" static-body visible="false" color="#000"></a-box>
+        <!-- Ground used for physics -->
+        <a-box position="0 -.49 0" width="200" height="1" depth="200" static-body visible="false"></a-box>
 
         <!-- Example: Couch -->
         <a-entity class="couch" holdable body="type: static; shape: none;" position="-7.4 0 -0.5" gltf-model="#couch" shape__base="halfExtents: 1 0.175 0.57; offset: 0 .195 0" shape__back="halfExtents: 0.81 0.42 0.0875; offset: 0 .429 -.486" shape__l-arm="halfExtents: 0.115 0.3 0.57; offset: -.882 .312 0" shape__r-arm="halfExtents: 0.115 0.3 0.57; offset: .883 .312 0" shape__cushion="halfExtents: 0.76 0.42 0.0875; offset: 0 .481 -.301; orientation: -.068 0 0 .998"></a-entity>
