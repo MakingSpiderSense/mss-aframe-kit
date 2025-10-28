@@ -237,6 +237,8 @@
                 title: { type: 'string', default: 'Add Title Here' },
                 details: { type: 'string', default: '- Point 1\n- Point 2' },
                 panelHeight: { type: 'number', default: 0.75 },
+                fadeDistance: { type: 'number', default: 2.5 }, // Distance threshold (XZ only)
+                fadeDuration: { type: 'number', default: 600 }  // Fade animation duration in ms
             },
             init: function () {
                 const el = this.el;
@@ -246,7 +248,7 @@
                 plane.setAttribute('color', '#ffffff');
                 plane.setAttribute('height', data.panelHeight);
                 plane.setAttribute('width', '1');
-                plane.setAttribute('opacity', '0.9');
+                plane.setAttribute('opacity', '0');
                 plane.setAttribute('material', 'side: double');
                 el.appendChild(plane);
                 // Heading
@@ -259,6 +261,7 @@
                 title.setAttribute('anchor', 'left');
                 title.setAttribute('baseline', 'top');
                 title.setAttribute('font', 'assets/fonts/mozillavr.fnt');
+                title.setAttribute('opacity', '0');
                 el.appendChild(title);
                 // Body text
                 const bodyText = document.createElement('a-text');
@@ -271,7 +274,62 @@
                 bodyText.setAttribute('baseline', 'top');
                 bodyText.setAttribute('line-height', '113');
                 bodyText.setAttribute('font', 'assets/fonts/mozillavr.fnt');
+                bodyText.setAttribute('opacity', '0');
                 el.appendChild(bodyText);
+                // Store references
+                this.plane = plane;
+                this.title = title;
+                this.bodyText = bodyText;
+                // Fade state tracking
+                this.isVisible = false;
+                // Cache reference to user rig
+                this.userRig = document.querySelector('.user');
+                if (!this.userRig) {
+                    console.warn('[info-board] No element with class "user" found in scene.');
+                }
+            },
+            tick: function () {
+                if (!this.userRig) return;
+                const userPos = this.userRig.object3D.position;
+                const boardPos = this.el.object3D.position;
+                // Calculate XZ distance only
+                const dx = userPos.x - boardPos.x;
+                const dz = userPos.z - boardPos.z;
+                const distance = Math.sqrt(dx * dx + dz * dz);
+                // If within range and not visible, fade in
+                if (distance <= this.data.fadeDistance && !this.isVisible) {
+                    this.isVisible = true;
+                    this.fadeToOpacity(0.9);
+                }
+                // If out of range and currently visible, fade out
+                else if (distance > this.data.fadeDistance && this.isVisible) {
+                    this.isVisible = false;
+                    this.fadeToOpacity(0);
+                }
+            },
+            fadeToOpacity: function (targetOpacity) {
+                const duration = this.data.fadeDuration;
+                // Plane fade
+                this.plane.setAttribute('animation__plane', {
+                    property: 'material.opacity',
+                    to: targetOpacity,
+                    dur: duration,
+                    easing: 'easeInOutQuad'
+                });
+                // Title fade
+                this.title.setAttribute('animation__title', {
+                    property: 'opacity',
+                    to: targetOpacity,
+                    dur: duration,
+                    easing: 'easeInOutQuad'
+                });
+                // Body text fade
+                this.bodyText.setAttribute('animation__body', {
+                    property: 'opacity',
+                    to: targetOpacity,
+                    dur: duration,
+                    easing: 'easeInOutQuad'
+                });
             }
         });
     </script>
