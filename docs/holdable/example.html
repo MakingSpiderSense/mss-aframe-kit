@@ -40,6 +40,7 @@
         <a-box position="0 -.49 0" width="200" height="1" depth="200" static-body visible="false"></a-box>
 
         <!-- Example: Couch -->
+        <!-- Description: The couch demonstrates a static physics body setup with multiple custom collision shapes. As a static object, it stays in the position it's released in, but other dynamic objects will interact with it realistically, bouncing or colliding on impact. The shapes defined under `shape__*` illustrate how a more complex physics shape can be used with the holdable component. -->
         <a-entity class="couch"
             holdable
             gltf-model="#couch"
@@ -47,17 +48,21 @@
             shape__base="halfExtents: 1 0.175 0.57; offset: 0 .195 0" shape__back="halfExtents: 0.81 0.42 0.0875; offset: 0 .429 -.486" shape__l-arm="halfExtents: 0.115 0.3 0.57; offset: -.882 .312 0" shape__r-arm="halfExtents: 0.115 0.3 0.57; offset: .883 .312 0" shape__cushion="halfExtents: 0.76 0.42 0.0875; offset: 0 .481 -.301; orientation: -.068 0 0 .998"
             position="-7.4 0 -0.5"
         ></a-entity>
+        <a-entity position="-7.4 2.2 -.94" info-board="title: Couch; details: - Static body\n- Custom physics shape"></a-entity>
 
         <!-- Example: Basketball -->
+        <!-- Description: The basketball uses dynamic body physics so that gravity and collisions apply naturally. It also includes a custom hold position and rotation so that it aligns correctly in the user’s hand, similar to how a real basketball would be held before taking a shot. -->
         <a-sphere class="basketball"
             gltf-model="#basketball"
             holdable="position: -0.032 -0.126 0.132; rotation: -83.6 117.9 -114.5"
             body="type: dynamic; shape: sphere;"
             radius=".11"
-            position="-5 5 -.5"
+            position="-5.5 5 -.5"
         ></a-sphere>
+        <a-entity position="-5.5 2.2 -.94" info-board="title: Basketball; details: - Dynamic body\n- Custom hold position"></a-entity>
 
         <!-- Example: Ice Cube -->
+        <!-- Description: The ice cube is a simple static body with a basic box shape. It stays fixed in place when released but reacts to collisions from dynamic objects, demonstrating a minimal static physics setup. -->
         <a-box class="ice_cube"
             gltf-model="#ice_cube"
             holdable
@@ -65,12 +70,13 @@
             depth=".8"
             height=".8"
             width=".8"
-            position="-3.5 0.402 -.5"
+            position="-3.8 0.402 -.5"
         ></a-box>
+        <a-entity position="-3.8 2.2 -.94" info-board="title: Ice Cube; details: - Static body"></a-entity>
 
-        <!-- Example: Boxes -->
-        <!-- Box with prop change on grip and release -->
-        <a-box class="box-wild"
+        <!-- Example: Blocks -->
+        <!-- Description: The blocks demonstrate primitive A-Frame shapes with dynamic physics. Each block can collide and move naturally. The green box shows how the holdable component can modify properties on grab and release by changing color, wireframe, opacity, and scale dynamically. -->
+        <a-box class="block-wild"
             holdable
             dynamic-body
             material="color: #97dba1"
@@ -78,29 +84,33 @@
             holdable-release-material="color: #c657e5; wireframe: false; opacity: .5; side: double;"
             holdable-grip-scale="1.5 1.5 1.5"
             holdable-release-scale="1.5 1.5 1.5"
-            position="-1.8 1 -.5"
+            position="-2.1 1 -.5"
             width=".2"
             height=".2"
             depth=".2"
         ></a-box>
         <!-- Regular boxes -->
-        <a-box class="box-normal-1" holdable dynamic-body sleepy="speedLimit: .7; delay: 1;" position="-1.675 .1 -.56" width=".2" height=".2" depth=".2" color="#e8eaeb"></a-box>
-        <a-box class="box-normal-2" holdable dynamic-body sleepy="speedLimit: .7; delay: 1;" position="-2 .1 -.6" width=".2" height=".2" depth=".2" color="#e8eaeb"></a-box>
-        <a-box class="box-normal-3" holdable dynamic-body sleepy="speedLimit: .7; delay: 1;" position="-1.8 .1 -.8" width=".2" height=".2" depth=".2" color="#e8eaeb"></a-box>
-        <a-box class="box-normal-4" holdable dynamic-body sleepy="speedLimit: .7; delay: 1;" position="-1.83 .4 -.7" rotation="0 10 30" width=".2" height=".2" depth=".2" color="#e8eaeb"></a-box>
+        <a-box class="block-normal-1" holdable dynamic-body sleepy="speedLimit: .7; delay: 1;" position="-1.975 .1 -.56" width=".2" height=".2" depth=".2" color="#e8eaeb"></a-box>
+        <a-box class="block-normal-2" holdable dynamic-body sleepy="speedLimit: .7; delay: 1;" position="-2.3 .1 -.6" width=".2" height=".2" depth=".2" color="#e8eaeb"></a-box>
+        <a-box class="block-normal-3" holdable dynamic-body sleepy="speedLimit: .7; delay: 1;" position="-2.1 .1 -.8" width=".2" height=".2" depth=".2" color="#e8eaeb"></a-box>
+        <a-box class="block-normal-4" holdable dynamic-body sleepy="speedLimit: .7; delay: 1;" position="-2.13 .4 -.7" rotation="0 10 30" width=".2" height=".2" depth=".2" color="#e8eaeb"></a-box>
+        <a-entity position="-2.1 2.2 -.94" info-board="title: Boxes; details: - Dynamic body\n- Primitive shapes\n- Green block changes\nvisually on grab/release"></a-entity>
 
         <!-- Example: Robot -->
+        <!-- Description: The robot model features a built-in animation controlled by the animation-mixer component and no physics body, useful for non-physical animated entities such as NPCs. It demonstrates how animations can be paused while held using holdable-grip-* modifiers and then resume once released. -->
         <a-entity class="sphere-robot"
             holdable gltf-model="#sphere_robot"
             animation-mixer
             holdable-grip-animation-mixer="timeScale: 0;"
             holdable-grip-animation__rotate="enabled: false;"
             face-user-on-release
-            position="-.5 1.3 -.5"
+            position="-.4 1.3 -.5"
             rotation="0 5 0"
         ></a-entity>
+        <a-entity position="-.4 2.2 -.94" info-board="title: Robot; details: - No physics\n- Pause model animation\non grip"></a-entity>
 
         <!-- Example: Shield -->
+        <!-- Description: The shield has no physics initially and rotates continuously using an A-Frame animation, just waiting to be grabbed. When grabbed, the animation is paused and positioned on the arm, where a shield should be. When released, the shield becomes a dynamic body affected by gravity and the animation behavior is restored. -->
         <a-entity class="shield"
             gltf-model="#shield"
             holdable="position: 0.139 -0.154 0.419; rotation: -177.6 1.4 -109.7; insideMeshDetection: false;"
@@ -108,12 +118,14 @@
             animation="property: rotation; to: 90 360 0; loop: true; dur: 10000; easing: linear"
             holdable-grip-animation="enabled: false;"
             holdable-release-animation="enabled: false;"
-            position="1.2 1.2 -.5"
+            position="1.3 1.2 -.5"
             rotation="90 0 0"
         ></a-entity>
+        <a-entity position="1.3 2.2 -.94" info-board="title: Shield; details: - No physics initially\n- Dynamic after grab\n- Custom hold position\n- End A-Frame animation\non grab/release"></a-entity>
 
         <!-- Example: Sword -->
-        <!-- 📝 If you see the "body not found" warning in the console, that's ok. It gets added on grab. -->
+        <!-- Description: Similar to the shield, the sword starts with no physics and becomes dynamic when grabbed. It disables its A-Frame animation on grab and sets a custom position in the user's hand, then restores animation on release. It also features a hidden enlarged grab zone, great for making smaller models easier to pick up. It plays a sword sound for feedback when grabbed. -->
+        <!-- 📝 Note:  If you see the "body not found" warning in the console, that's ok. It gets added on grab. -->
         <a-entity class="sword"
                 holdable="position: 0.153 -0.520 0.219; rotation: -3.2 -3.8 -90.3; leftHandRotationInvert: y;"
                 holdable-dynamic-body
@@ -124,7 +136,7 @@
                 holdable-grip-animation="enabled: false;"
                 holdable-release-animation="enabled: false;"
                 sleepy="speedLimit: .7; delay: 1;"
-                position="2.9 1.2 -0.685"
+                position="3 1.2 -0.685"
                 rotation="-90 0 0"
             >
             <!-- Actual sword mesh -->
@@ -132,11 +144,14 @@
             <!-- Hidden sword scaled up to make it easier to grab -->
             <a-entity gltf-model="#sword" class="interactable" visible="false" scale="8 8 1.2"></a-entity>
         </a-entity>
+        <!-- Description: Add more full description here -->
+        <a-entity position="3 2.2 -.94" info-board="title: Sword; panelHeight: .85; details: - No physics initially\n- Dynamic after grab\n- Custom hold position\n- Hidden enlarged grab zone\n- Play sound when grabbed\n- End A-Frame animation\non grab/release"></a-entity>
 
         <!-- Example: Canvas Display -->
-        <a-entity class="canvas-art" position="6.5 1.5 -.5">
+        <!-- Description: The canvas display represents three wall-mounted panels that start as static bodies, preventing other objects from passing through them. When grabbed, they become dynamic, allowing users to pull them off the wall or drop them. This demonstrates how wall-mounted objects can switch between static and dynamic physics. -->
+        <a-entity class="canvas-art" position="7 1.5 -.5">
             <!-- Wall -->
-            <a-box position="0 0 -0.10115" static-body material="color: #7f1b34" geometry="depth: 0.15; height: 3; width: 4"></a-box>
+            <a-box position="0 0 -0.10115" static-body material="color: #7f1b34" geometry="depth: 0.15; height: 3; width: 4.5"></a-box>
             <!-- 3 Panels -->
             <a-entity class="panel-left"
                 gltf-model="#panel_left"
@@ -163,14 +178,7 @@
                 position=".63 0 0"
             ></a-entity>
         </a-entity>
-
-        <!-- Example: Robot -->
-        <a-entity class="sphere-robot" position="-.5 1.3 -.5" rotation="0 5 0" holdable gltf-model="#sphere_robot"
-            animation-mixer
-            face-user-on-release
-            holdable-grip-animation-mixer="timeScale: 0;"
-            holdable-grip-animation__rotate="enabled: false;"
-        ></a-entity>
+        <a-entity position="5.4 1.5 -.5" info-board="title: Canvas Display; fadeDistance: 3; details: - Static body initially\n- Dynamic after grab"></a-entity>
 
 		<!-- Camera Rig -->
 		<a-entity class="user" position="0 0 6" movement-controls="speed: .5; constrainToNavMesh: true;">
