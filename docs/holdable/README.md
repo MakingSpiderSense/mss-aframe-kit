@@ -8,6 +8,10 @@ This component is ideal for VR scenes where users interact with objects, such as
 
 _Tested with A-Frame 1.7.0_
 
+![Demo Thumbnail](assets/demo-thumbnail.png)
+
+**Have a headset? [Try it out in VR!](https://makingspidersense.github.io/mss-aframe-kit/holdable/example.html)**
+
 ## Basic Usage
 
 Add the `holdable` component to an entity you'd like to make grabbable, such as a model or primitive geometry. Optionally provide local position and rotation offsets:
