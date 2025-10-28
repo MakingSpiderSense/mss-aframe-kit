@@ -137,6 +137,8 @@
                 animation="property: rotation; to: -90 360 0; loop: true; dur: 10000; easing: linear"
                 holdable-grip-animation="enabled: false;"
                 holdable-release-animation="enabled: false;"
+                play-sword-draw-sound-on-grab
+                sound="src: #sword_sound; volume: 0.5; autoplay: false;"
                 sleepy="speedLimit: .7; delay: 1;"
                 position="3 1.2 -0.685"
                 rotation="-90 0 0"
@@ -212,6 +214,18 @@
         </a-entity>
 
     </a-scene>
+
+    <!-- Example: Play sound on grab -->
+    <script>
+        AFRAME.registerComponent('play-sword-draw-sound-on-grab', {
+            init: function () {
+                const el = this.el;
+                el.addEventListener('grip-down', () => {
+                    el.components.sound.playSound();
+                });
+            }
+        });
+    </script>
 
     <!-- Not important -->
     <script>
