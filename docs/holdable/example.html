@@ -1,0 +1,261 @@
+<!doctype html>
+<html>
+<head>
+    <title>Holdable - Example</title>
+    <script src="https://cdn.jsdelivr.net/npm/aframe@1.7.0/dist/aframe.min.js"></script>
+    <script src="https://unpkg.com/aframe-environment-component@1.5.x/dist/aframe-environment-component.min.js"></script><!-- Not important -->
+    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.5.4/dist/aframe-extras.min.js"></script><!-- Not important -->
+    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-physics-system@v4.2.2/dist/aframe-physics-system.js"></script><!-- Only need for physics -->
+    <script src="https://unpkg.com/aframe-physics-extras@0.1.2/dist/aframe-physics-extras.min.js"></script><!-- Only need for sleepy component (reduces jitter). -->
+    <script src="https://unpkg.com/aframe-haptics-component/dist/aframe-haptics-component.min.js"></script><!-- Only need for haptic feedback. -->
+    <script src="https://cdn.jsdelivr.net/gh/MakingSpiderSense/mss-aframe-kit@main/dist/mss-aframe-kit.min.js"></script>
+    <script>document.write(`<script src="js/nonessential-components.js?cache_buster=${new Date().getTime()}"><\/script>`);</script><!-- Not important -->
+</head>
+
+<body>
+    <!-- Include `post-model-load-refresh` for better model compatibility. And use `raycaster-listener` if you want to have haptic feedback when grabbing objects. -->
+    <a-scene
+        post-model-load-refresh
+        raycaster-listener
+        physics="driver: local; debug: false;"
+        >
+
+        <!-- Asset Management System -->
+        <a-assets timeout="60000">
+            <audio id="sword_sound" src="assets/sounds/sword_draw.mp3"></audio>
+            <a-asset-item id="sphere_robot" src="assets/360_sphere_robot.glb"></a-asset-item>
+            <a-asset-item id="basketball" src="assets/basketball_blue.glb"></a-asset-item>
+            <a-asset-item id="ice_cube" src="assets/ice_cube.glb"></a-asset-item>
+            <a-asset-item id="couch" src="assets/couch.glb"></a-asset-item>
+            <a-asset-item id="panel_left" src="assets/panel_left.glb"></a-asset-item>
+            <a-asset-item id="panel_middle" src="assets/panel_middle.glb"></a-asset-item>
+            <a-asset-item id="panel_right" src="assets/panel_right.glb"></a-asset-item>
+            <a-asset-item id="sword" src="assets/sword.glb"></a-asset-item>
+            <a-asset-item id="shield" src="assets/shield.glb"></a-asset-item>
+            <a-asset-item id="leftHandHigh" src="https://cdn.aframe.io/controllers/hands/leftHandHigh.glb"></a-asset-item>
+            <a-asset-item id="rightHandHigh" src="https://cdn.aframe.io/controllers/hands/rightHandHigh.glb"></a-asset-item>
+        </a-assets>
+
+        <!-- Environment -->
+        <a-entity class="env-dream" environment="preset: tron; seed: 3; dressing: none; ground: flat;"></a-entity>
+
+        <!-- Ground used for physics -->
+        <a-box position="0 -.49 0" width="200" height="1" depth="200" static-body visible="false"></a-box>
+
+        <!-- Example: Couch -->
+        <!-- Description: The couch demonstrates a static physics body setup with multiple custom collision shapes. As a static object, it stays in the position it's released in, but other dynamic objects will interact with it realistically, bouncing or colliding on impact. The shapes defined under `shape__*` illustrate how a more complex physics shape can be used with the holdable component. -->
+        <a-entity class="couch"
+            holdable
+            gltf-model="#couch"
+            body="type: static; shape: none;"
+            shape__base="halfExtents: 1 0.175 0.57; offset: 0 .195 0" shape__back="halfExtents: 0.81 0.42 0.0875; offset: 0 .429 -.486" shape__l-arm="halfExtents: 0.115 0.3 0.57; offset: -.882 .312 0" shape__r-arm="halfExtents: 0.115 0.3 0.57; offset: .883 .312 0" shape__cushion="halfExtents: 0.76 0.42 0.0875; offset: 0 .481 -.301; orientation: -.068 0 0 .998"
+            position="-7.4 0 -0.5"
+        ></a-entity>
+        <a-entity position="-7.4 2.2 -.94" info-board="title: Couch; details: - Static body\n- Custom physics shape"></a-entity>
+
+        <!-- Example: Basketball -->
+        <!-- Description: The basketball uses dynamic body physics so that gravity and collisions apply naturally. It also includes a custom hold position and rotation so that it aligns correctly in the user’s hand, similar to how a real basketball would be held before taking a shot. -->
+        <a-sphere class="basketball"
+            gltf-model="#basketball"
+            holdable="position: -0.032 -0.126 0.132; rotation: -83.6 117.9 -114.5"
+            body="type: dynamic; shape: sphere;"
+            radius=".11"
+            position="-5.5 5 -.5"
+        ></a-sphere>
+        <a-entity position="-5.5 2.2 -.94" info-board="title: Basketball; details: - Dynamic body\n- Custom hold position"></a-entity>
+
+        <!-- Example: Ice Cube -->
+        <!-- Description: The ice cube is a simple static body with a basic box shape. It stays fixed in place when released but reacts to collisions from dynamic objects, demonstrating a minimal static physics setup. -->
+        <a-box class="ice_cube"
+            gltf-model="#ice_cube"
+            holdable
+            body="type: static; shape: box;"
+            depth=".8"
+            height=".8"
+            width=".8"
+            position="-3.8 0.402 -.5"
+        ></a-box>
+        <a-entity position="-3.8 2.2 -.94" info-board="title: Ice Cube; details: - Static body"></a-entity>
+
+        <!-- Example: Blocks -->
+        <!-- Description: The blocks demonstrate primitive A-Frame shapes with dynamic physics. Each block can collide and move naturally. The green box shows how the holdable component can modify properties on grab and release by changing color, wireframe, opacity, and scale dynamically. -->
+        <a-box class="block-wild"
+            holdable
+            dynamic-body
+            material="color: #97dba1"
+            holdable-grip-material="color: #e557d9; wireframe: true; opacity: .1; side: double;"
+            holdable-release-material="color: #c657e5; wireframe: false; opacity: .5; side: double;"
+            holdable-grip-scale="1.5 1.5 1.5"
+            holdable-release-scale="1.5 1.5 1.5"
+            sleepy="speedLimit: .7; delay: 1;"
+            position="-2.1 1 -.5"
+            width=".2"
+            height=".2"
+            depth=".2"
+        ></a-box>
+        <!-- Regular boxes -->
+        <a-box class="block-normal-1" holdable dynamic-body sleepy="speedLimit: .7; delay: 1;" position="-1.975 .1 -.56" width=".2" height=".2" depth=".2" color="#e8eaeb"></a-box>
+        <a-box class="block-normal-2" holdable dynamic-body sleepy="speedLimit: .7; delay: 1;" position="-2.3 .1 -.6" width=".2" height=".2" depth=".2" color="#e8eaeb"></a-box>
+        <a-box class="block-normal-3" holdable dynamic-body sleepy="speedLimit: .7; delay: 1;" position="-2.1 .1 -.8" width=".2" height=".2" depth=".2" color="#e8eaeb"></a-box>
+        <a-box class="block-normal-4" holdable dynamic-body sleepy="speedLimit: .7; delay: 1;" position="-2.13 .4 -.7" rotation="0 10 30" width=".2" height=".2" depth=".2" color="#e8eaeb"></a-box>
+        <a-entity position="-2.1 2.2 -.94" info-board="title: Boxes; details: - Dynamic body\n- Primitive shapes\n- Green block changes\nvisually on grab/release"></a-entity>
+
+        <!-- Example: Robot -->
+        <!-- Description: The robot model features a built-in animation controlled by the animation-mixer component and no physics body, useful for non-physical animated entities such as NPCs. It demonstrates how animations can be paused while held using holdable-grip-* modifiers and then resume once released. -->
+        <a-entity class="sphere-robot"
+            holdable gltf-model="#sphere_robot"
+            animation-mixer
+            holdable-grip-animation-mixer="timeScale: 0;"
+            holdable-grip-animation__rotate="enabled: false;"
+            face-user-on-release
+            position="-.4 1.3 -.5"
+            rotation="0 5 0"
+        ></a-entity>
+        <a-entity position="-.4 2.2 -.94" info-board="title: Robot; details: - No physics\n- Pause model animation\non grip"></a-entity>
+
+        <!-- Example: Shield -->
+        <!-- Description: The shield has no physics initially and rotates continuously using an A-Frame animation, just waiting to be grabbed. When grabbed, the animation is paused and positioned on the arm, where a shield should be. When released, the shield becomes a dynamic body affected by gravity and the animation behavior is restored. -->
+        <a-entity class="shield"
+            gltf-model="#shield"
+            holdable="position: 0.139 -0.154 0.419; rotation: -177.6 1.4 -109.7; insideMeshDetection: false;"
+            holdable-dynamic-body
+            animation="property: rotation; to: 90 360 0; loop: true; dur: 10000; easing: linear"
+            holdable-grip-animation="enabled: false;"
+            holdable-release-animation="enabled: false;"
+            sleepy="speedLimit: .7; delay: 1;"
+            position="1.3 1.2 -.5"
+            rotation="90 0 0"
+        ></a-entity>
+        <a-entity position="1.3 2.2 -.94" info-board="title: Shield; details: - No physics initially\n- Dynamic after grab\n- Custom hold position\n- End A-Frame animation\non grab/release"></a-entity>
+
+        <!-- Example: Sword -->
+        <!-- Description: Similar to the shield, the sword starts with no physics and becomes dynamic when grabbed. It disables its A-Frame animation on grab and sets a custom position in the user's hand, then restores animation on release. It also features a hidden enlarged grab zone, great for making smaller models easier to pick up. It plays a sword sound for feedback when grabbed. -->
+        <!-- 📝 Note:  If you see the "body not found" warning in the console, that's ok. It gets added on grab. -->
+        <a-entity class="sword"
+                holdable="position: 0.153 -0.520 0.219; rotation: -3.2 -3.8 -90.3; leftHandRotationInvert: y;"
+                holdable-dynamic-body
+                shape__sword="halfExtents: 0.03 0.015 0.445; offset: -.008 0 0"
+                holdable-grip-body="type: dynamic; shape: none;"
+                holdable-release-body="type: dynamic; shape: none;"
+                animation="property: rotation; to: -90 360 0; loop: true; dur: 10000; easing: linear"
+                holdable-grip-animation="enabled: false;"
+                holdable-release-animation="enabled: false;"
+                play-sword-draw-sound-on-grab
+                sound="src: #sword_sound; volume: 0.5; autoplay: false;"
+                sleepy="speedLimit: .7; delay: 1;"
+                position="3 1.2 -0.685"
+                rotation="-90 0 0"
+            >
+            <!-- Actual sword mesh -->
+            <a-entity gltf-model="#sword"></a-entity>
+            <!-- Hidden sword scaled up to make it easier to grab -->
+            <a-entity gltf-model="#sword" class="interactable" visible="false" scale="8 8 1.2"></a-entity>
+        </a-entity>
+        <!-- Description: Add more full description here -->
+        <a-entity position="3 2.2 -.94" info-board="title: Sword; panelHeight: .85; details: - No physics initially\n- Dynamic after grab\n- Custom hold position\n- Hidden enlarged grab zone\n- Play sound when grabbed\n- End A-Frame animation\non grab/release"></a-entity>
+
+        <!-- Example: Canvas Display -->
+        <!-- Description: The canvas display represents three wall-mounted panels that start as static bodies, preventing other objects from passing through them. When grabbed, they become dynamic, allowing users to pull them off the wall or drop them. This demonstrates how wall-mounted objects can switch between static and dynamic physics. -->
+        <a-entity class="canvas-art" position="7 1.5 -.5">
+            <!-- Wall -->
+            <a-box position="0 0 -0.10115" static-body material="color: #7f1b34" geometry="depth: 0.15; height: 3; width: 4.5"></a-box>
+            <!-- 3 Panels -->
+            <a-entity class="panel-left"
+                gltf-model="#panel_left"
+                holdable
+                holdable-dynamic-body
+                body="type: static; shape: none;"
+                shape__collision="halfExtents: 0.301 0.541 0.026; offset: 0 0 0"
+                sleepy="speedLimit: .7; delay: 1;"
+                position="-.63 0 0"
+            ></a-entity>
+            <a-entity class="panel-middle"
+                gltf-model="#panel_middle"
+                holdable
+                holdable-dynamic-body
+                body="type: static; shape: none;"
+                shape__collision="halfExtents: 0.301 0.601 0.026; offset: 0 0 0"
+                sleepy="speedLimit: .7; delay: 1;"
+                position="0 0 0"
+            ></a-entity>
+            <a-entity class="panel-right"
+                gltf-model="#panel_right"
+                holdable
+                holdable-dynamic-body
+                body="type: static; shape: none;"
+                shape__collision="halfExtents: 0.301 0.541 0.026; offset: 0 0 0"
+                sleepy="speedLimit: .7; delay: 1;"
+                position=".63 0 0"
+            ></a-entity>
+        </a-entity>
+        <a-entity position="5.4 1.5 -.5" info-board="title: Canvas Display; fadeDistance: 3; details: - Static body initially\n- Dynamic after grab"></a-entity>
+
+		<!-- Camera Rig -->
+		<a-entity class="user" position="0 0 6" movement-controls="speed: .5; constrainToNavMesh: true;">
+
+			<!-- Camera -->
+			<a-entity camera position="0 1.6 0" look-controls="pointerLockEnabled: false"></a-entity>
+
+            <!-- Hand Controllers -->
+            <a-entity class="controllers">
+                <a-entity id="left-hand" hand-controls="hand: left; handModelStyle: highPoly; color: #8387ef" haptics__trigger="events: trigger-vibration;">
+                    <a-entity class="actual-ray" cursor rotation="-15 -90 0" raycaster="objects: .interactable; autoRefresh: false; enabled: true; far: .25; showLine: false; lineColor: red"></a-entity>
+                </a-entity>
+                <a-entity id="right-hand" hand-controls="hand: right; handModelStyle: highPoly; color: #8387ef" haptics__trigger="events: trigger-vibration;">
+                    <a-entity class="actual-ray" cursor rotation="-15 90 0" raycaster="objects: .interactable; autoRefresh: false; enabled: true; far: .25; showLine: false; lineColor: red"></a-entity>
+                </a-entity>
+            </a-entity>
+
+            <!-- Meta Controllers -->
+            <!-- Alternative: This is an alternative to hand-controls, allowing the controllers to show up. Comment out the .controllers entity above to try this out on a Quest VR headset. -->
+            <!-- <a-entity class="controllers">
+                <a-entity id="left-hand" meta-touch-controls="hand: left" haptics__trigger="events: trigger-vibration;">
+                    <a-cylinder class="styled-ray ar-left" visible="true" position="0 -.389 -.673" height="1.455" radius="0.002" color="#ffffff" rotation="60 0 0" opacity=".4"></a-cylinder>
+                    <a-entity class="actual-ray" cursor rotation="-30 0 0" raycaster="objects: .interactable; autoRefresh: false; enabled: true; far: 1.5; showLine: false; lineColor: red"></a-entity>
+                </a-entity>
+                <a-entity id="right-hand" meta-touch-controls="hand: right" haptics__trigger="events: trigger-vibration;">
+                    <a-cylinder class="styled-ray ar-right" visible="true" position="0 -.389 -.673" height="1.455" radius="0.002" color="#ffffff" rotation="60 0 0" opacity=".4"></a-cylinder>
+                    <a-entity class="actual-ray" cursor rotation="-30 0 0" raycaster="objects: .interactable; autoRefresh: false; enabled: true; far: 1.5; showLine: false; lineColor: red"></a-entity>
+                </a-entity>
+            </a-entity> -->
+
+        </a-entity>
+
+    </a-scene>
+
+    <!-- Example: Play sound on grab -->
+    <script>
+        AFRAME.registerComponent('play-sword-draw-sound-on-grab', {
+            init: function () {
+                const el = this.el;
+                el.addEventListener('grip-down', () => {
+                    el.components.sound.playSound();
+                });
+            }
+        });
+    </script>
+
+</body>
+</html>
+
+<!--
+
+⭐ Credits ⭐
+
+🙏 A big thank you to the talented artists who created the free 3D models and assets used in this example!
+
+❤️ "Low Poly Couch" by Jonathan, © 2023 Jonathan, used under CC Attribution. No changes were made. Original available at: https://sketchfab.com/3d-models/low-poly-couch-2ecc3071a25247b48a5995ac90765184
+
+❤️ "Basketball" by afurokn, © 2023 afurokn, used under CC Attribution. Changed texture color and scaled down. Original available at: https://sketchfab.com/3d-models/basketball-2343abdae7674f46ad85071858db93c6
+
+❤️ "Tesseract Cube" by Akshat, © 2020 Akshat, used under CC Attribution. Resized the object and optimized texture. Original available at: https://sketchfab.com/3d-models/tesseract-cube-43c205c3ea964d96b0e40319c2db5a14
+
+❤️ "360 Sphere Robot" by mikeramos, © 2020 mikeramos, used under CC Attribution. No changes were made. Original available at: https://sketchfab.com/3d-models/360-sphere-robot-a0bd28b7133648848427a5c27975611b
+
+❤️ "Shield" by Sergey Egelsky, © 2016 Sergey Egelsky, used under CC Attribution. Optimized for the web. Original available at: https://sketchfab.com/3d-models/shield-9626b82200e44a5ea4a0ac5cd8020e3f
+
+❤️ "Low poly sword" by RanJJ, © 2023 RanJJ, used under CC Attribution. Optimized for the web. Original available at: https://sketchfab.com/3d-models/low-poly-sword-7e183f07ae834e05bc517b5bfb1ed879
+
+❤️ "Sword drop on grass 1" by ZapSplat, © 2025 ZapSplat, used under the Standard License Agreement. No changes were made. Original available at: https://www.zapsplat.com/music/sword-drop-on-grass-1-2/
+
+-->
