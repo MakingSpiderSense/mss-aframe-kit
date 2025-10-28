@@ -1,4 +1,4 @@
-/*! mss-aframe-kit v2.1.0 */
+/*! mss-aframe-kit v2.2.0 */
 (function(global, factory) {
   typeof exports === "object" && typeof module !== "undefined" ? factory(exports) : typeof define === "function" && define.amd ? define(["exports"], factory) : (global = typeof globalThis !== "undefined" ? globalThis : global || self, factory(global.MSSAFrameKit = {}));
 })(this, function(exports2) {
@@ -338,6 +338,8 @@
       rotation: { type: "vec3", default: { x: 0, y: 0, z: 0 } },
       leftHandRotationInvert: { type: "array", default: ["y", "z"] },
       // Pick the rotation axes to invert for left hand (if using local-custom rotation)
+      insideMeshDetection: { type: "boolean", default: true },
+      // Enable/disable inside-mesh raycast detection
       debug: { type: "boolean", default: false }
       // Show debug logs in console (helpful for getting grab position/rotation)
     },
@@ -373,6 +375,24 @@
       }
       if (!this.el.classList.contains(intersectionClass)) {
         this.el.classList.add(intersectionClass);
+      }
+      if (this.data.insideMeshDetection) {
+        const makeDoubleSided = (mesh) => {
+          if (!mesh) return;
+          mesh.traverse((node) => {
+            if (node.isMesh && node.material) {
+              node.material.side = THREE.DoubleSide;
+              node.material.needsUpdate = true;
+            }
+          });
+        };
+        const initialMesh = this.el.getObject3D("mesh");
+        if (initialMesh) {
+          makeDoubleSided(initialMesh);
+        }
+        this.el.addEventListener("model-loaded", () => {
+          makeDoubleSided(this.el.getObject3D("mesh"));
+        });
       }
     },
     // Modifiers - Scan for grip and release modifier attributes
@@ -481,17 +501,23 @@
         hand: handEl,
         entity: this.el
       });
-      const handId = handEl.getAttribute("id") || handEl.object3D.uuid;
-      const origin = handEl.object3D.getWorldPosition(new THREE.Vector3());
-      const direction = new THREE.Vector3();
-      handEl.object3D.getWorldDirection(direction);
-      this.insideTestRaycaster.set(origin, direction.normalize());
-      const intersections = this.insideTestRaycaster.intersectObject(this.el.object3D, true);
-      const isInside = intersections.length % 2 === 1;
-      this.insideMesh[handId] = isInside;
-      if (!this.insideMesh[handId] && !(this.isHeld && handEl === this.holdingHand)) {
+      let isInside = false;
+      if (this.data.insideMeshDetection) {
+        isInside = this.isHandInsideMesh(handEl);
+      }
+      if (!isInside && !(this.isHeld && handEl === this.holdingHand)) {
         handEl.removeEventListener("gripdown", this.onGripDown);
         handEl.removeEventListener("gripup", this.onGripUp);
+      } else {
+        if (isInside && this.data.insideMeshDetection) {
+          setTimeout(() => {
+            isInside = this.isHandInsideMesh(handEl);
+            if (!isInside && !(this.isHeld && handEl === this.holdingHand)) {
+              handEl.removeEventListener("gripdown", this.onGripDown);
+              handEl.removeEventListener("gripup", this.onGripUp);
+            }
+          }, 200);
+        }
       }
       this.rayActive = false;
     },
@@ -698,7 +724,7 @@
       posForAttr = pos.clone().add(bottomCornerOffset);
       const posStr = posForAttr.x.toFixed(3) + " " + posForAttr.y.toFixed(3) + " " + posForAttr.z.toFixed(3);
       const rotStr = rotX.toFixed(1) + " " + rotY.toFixed(1) + " " + rotZ.toFixed(1);
-      console.log('holdable="position: ' + posStr + "; rotation: " + rotStr + '"');
+      console.log(`holdable="position: ${posStr}; rotation: ${rotStr}"`);
     },
     onGripUp: function(evt) {
       if (!this.isHeld || !this.holdingHand) return;
@@ -782,13 +808,26 @@
           }
         });
       }
-      const handPos = this.holdingHand.object3D.getWorldPosition(new THREE.Vector3());
-      const bbox = new THREE.Box3().setFromObject(this.el.object3D);
-      if (!bbox.containsPoint(handPos)) {
+      let isInside = false;
+      if (this.data.insideMeshDetection) {
+        isInside = this.isHandInsideMesh(this.holdingHand);
+      }
+      if (!isInside) {
         this.holdingHand.removeEventListener("gripdown", this.onGripDown);
         this.holdingHand.removeEventListener("gripup", this.onGripUp);
         this.holdingHand = null;
       }
+    },
+    isHandInsideMesh: function(handEl) {
+      const handId = handEl.getAttribute("id") || handEl.object3D.uuid;
+      const origin = handEl.object3D.getWorldPosition(new THREE.Vector3());
+      const direction = new THREE.Vector3();
+      handEl.object3D.getWorldDirection(direction);
+      this.insideTestRaycaster.set(origin, direction.normalize());
+      const intersections = this.insideTestRaycaster.intersectObject(this.el.object3D, true);
+      const isInside = intersections.length % 2 === 1;
+      this.insideMesh[handId] = isInside;
+      return isInside;
     },
     remove: function() {
       this.el.removeEventListener("raycaster-intersected", this.onHitStart);
