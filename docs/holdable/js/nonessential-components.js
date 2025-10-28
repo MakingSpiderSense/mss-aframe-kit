@@ -1,5 +1,5 @@
 /**
- * This file contains non-essential components for holdable example with the focus on user experience enhancements. There is no need to use these components.
+ * This file contains non-essential components for the holdable example with the focus on user experience enhancements. There is no need to use these components.
  */
 
 
