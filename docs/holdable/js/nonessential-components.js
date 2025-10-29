@@ -133,3 +133,30 @@ AFRAME.registerComponent('info-board', {
         });
     }
 });
+
+// Used to make ice slippery
+// Probably not the best solution, but it works
+AFRAME.registerComponent('make-slippery', {
+    schema: {
+        slipperyFriction: { type: 'number', default: 0.0001 },
+    },
+    init: function () {
+        const world = this.el.sceneEl.systems.physics.driver.world;
+        if (world && world.defaultContactMaterial) {
+            // Create slippery material
+            const slipperyMaterial = new CANNON.Material('slipperyMaterial');
+            // Assign material to the desired entity once its body is ready
+            this.ensureBodyReady(this.el, () => {
+                this.el.body.material = slipperyMaterial;
+            });
+            world.defaultContactMaterial.friction = this.slipperyFriction;
+        } else {
+            console.warn('Physics world or defaultContactMaterial not found.');
+        }
+    },
+    // Wait for both body and physics system to be ready
+    ensureBodyReady: function (el, cb) {
+        if (el.body) { cb(); return; }
+        el.addEventListener('body-loaded', cb, { once: true });
+    }
+});

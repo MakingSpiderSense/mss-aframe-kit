@@ -25,7 +25,7 @@
             <audio id="sword_sound" src="assets/sounds/sword_draw.mp3"></audio>
             <a-asset-item id="sphere_robot" src="assets/360_sphere_robot.glb"></a-asset-item>
             <a-asset-item id="basketball" src="assets/basketball_blue.glb"></a-asset-item>
-            <a-asset-item id="ice_cube" src="assets/ice_cube.glb"></a-asset-item>
+            <a-asset-item id="ice_block" src="assets/ice_cube.glb"></a-asset-item>
             <a-asset-item id="couch" src="assets/couch.glb"></a-asset-item>
             <a-asset-item id="panel_left" src="assets/panel_left.glb"></a-asset-item>
             <a-asset-item id="panel_middle" src="assets/panel_middle.glb"></a-asset-item>
@@ -64,18 +64,19 @@
         ></a-sphere>
         <a-entity position="-5.5 2.2 -.94" info-board="title: Basketball; details: - Dynamic body\n- Custom hold position"></a-entity>
 
-        <!-- Example: Ice Cube -->
-        <!-- Description: The ice cube is a simple static body with a basic box shape. It stays fixed in place when released but reacts to collisions from dynamic objects, demonstrating a minimal static physics setup. -->
-        <a-box class="ice_cube"
-            gltf-model="#ice_cube"
+        <!-- Example: Ice Block -->
+        <!-- Description: The ice block is a simple static body with a basic box shape. It stays fixed in place when released but reacts to collisions from dynamic objects, demonstrating a minimal static physics setup. Throw an object on it and watch it slide. -->
+        <a-box class="ice_block"
+            gltf-model="#ice_block"
             holdable
             body="type: static; shape: box;"
+            make-slippery
             depth=".8"
             height=".8"
             width=".8"
             position="-3.8 0.402 -.5"
         ></a-box>
-        <a-entity position="-3.8 2.2 -.94" info-board="title: Ice Cube; details: - Static body"></a-entity>
+        <a-entity position="-3.8 2.2 -.94" info-board="title: Ice Block; details: - Static body"></a-entity>
 
         <!-- Example: Blocks -->
         <!-- Description: The blocks demonstrate primitive A-Frame shapes with dynamic physics. Each block can collide and move naturally. The green box shows how the holdable component can modify properties on grab and release by changing color, wireframe, opacity, and scale dynamically. -->
