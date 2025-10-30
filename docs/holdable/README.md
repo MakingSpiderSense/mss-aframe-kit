@@ -8,7 +8,9 @@ This component is ideal for VR scenes where users interact with objects, such as
 
 _Tested with A-Frame 1.7.0_
 
-![Demo Thumbnail](assets/demo-thumbnail.png)
+**[Watch Demo](https://youtu.be/gqVSbyMQXNE)**
+
+[![View Demo](assets/demo-thumbnail.jpg)](https://youtu.be/gqVSbyMQXNE)
 
 **Have a headset? [Try it out in VR!](https://makingspidersense.github.io/mss-aframe-kit/holdable/example.html)**
 
