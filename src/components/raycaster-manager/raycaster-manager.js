@@ -17,6 +17,11 @@ AFRAME.registerComponent("raycaster-manager", {
         console.log("Raycaster Manager initialized");
         const leftController = document.querySelector("#left-hand");
         const rightController = document.querySelector("#right-hand");
+        // Cache hand elements for performance
+        this.handElements = {
+            left: { actualRay: null, styledRay: null },
+            right: { actualRay: null, styledRay: null },
+        };
         // Listen for trigger down events on both controllers
         if (leftController && rightController) {
             leftController.addEventListener("triggerdown", () => this.toggleRaycaster("left"));
@@ -39,15 +44,20 @@ AFRAME.registerComponent("raycaster-manager", {
     /**
      * Hand elements
      *
-     * Returns the actual ray and styled ray elements for the requested controller hand.
+     * Returns the cached actual ray and styled ray elements for the requested controller hand.
      *
      * @param {"left"|"right"} hand The controller side whose ray elements should be retrieved.
      */
     getHandElements: function (hand) {
-        return {
-            actualRay: document.querySelector(`#${hand}-hand .actual-ray`),
-            styledRay: document.querySelector(`#${hand}-hand .styled-ray`),
-        };
+        const cachedHandElements = this.handElements[hand];
+        // This will be skipped at first since they will be null, but once they are cached, we return early as we already have the elements
+        if (cachedHandElements.actualRay?.isConnected && cachedHandElements.styledRay?.isConnected) {
+            return cachedHandElements;
+        }
+        // Cache the actual ray and styled ray elements for this hand and return them
+        cachedHandElements.actualRay = document.querySelector(`#${hand}-hand .actual-ray`);
+        cachedHandElements.styledRay = document.querySelector(`#${hand}-hand .styled-ray`);
+        return cachedHandElements;
     },
 
     /**
@@ -61,7 +71,6 @@ AFRAME.registerComponent("raycaster-manager", {
         const raycasterComponent = actualRay?.components?.raycaster;
         // Return null if no intersections found
         if (!raycasterComponent?.intersections?.length) {
-            //
             return null;
         }
         // Otherwise, return the distance to the closest intersection
@@ -116,8 +125,7 @@ AFRAME.registerComponent("raycaster-manager", {
     },
 
     /**
-     * Updates the active ray to match the nearest current intersection, or restores
-     * the cached default lengths when nothing is being hit.
+     * Updates the active ray to match the nearest current intersection, or restores the schema-defined default ray length when nothing is being hit.
      *
      * @param {"left"|"right"} hand The controller side whose ray should be synced.
      */
@@ -154,7 +162,7 @@ AFRAME.registerComponent("raycaster-manager", {
         // Check if the raycaster is already active on this controller
         if (raycasterData.enabled) {
             console.log("Raycaster already active on this controller:", hand);
-            // If not intersecting a interactable, disable it
+            // If not intersecting an interactable, disable it
             if (!raycasterComponent?.intersectedEls?.length) {
                 console.log("No intersection detected. Disabling raycaster on:", hand);
                 this.disableRaycaster(hand);
