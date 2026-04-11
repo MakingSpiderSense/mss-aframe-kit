@@ -7,12 +7,13 @@
  *
  */
 
-// ✏️ Move raycaster length (styled and actual) to schema as one value.
 // 🛠️ This seems like it could be the emulator, but when clicking right trigger to enable raycaster, then clicking again to hide it, it is not hiding and is fully visible. May need to test this in VR.
+    // 📝 This is actually expected behavior. The raycaster was intersecting an interactable object, so the system assumes interaction is desired and the raycaster does not disable.
 // 🛠️ When pulling away from two blocks, the raycaster goes through the further one briefly
 
 AFRAME.registerComponent("raycaster-manager", {
     schema: {
+        rayLength: { type: "number", default: 1.5 },
         intersectionBuffer: { type: "number", default: 0.02 },
     },
 
@@ -20,17 +21,18 @@ AFRAME.registerComponent("raycaster-manager", {
         console.log("Raycaster Manager initialized");
         const leftController = document.querySelector("#left-hand");
         const rightController = document.querySelector("#right-hand");
-        this.defaultLengths = {
-            left: { far: null, scale: null },
-            right: { far: null, scale: null },
-        };
         // Listen for trigger down events on both controllers
         if (leftController && rightController) {
             leftController.addEventListener("triggerdown", () => this.toggleRaycaster("left"));
             rightController.addEventListener("triggerdown", () => this.toggleRaycaster("right"));
         }
-        this.storeDefaultLengths("left");
-        this.storeDefaultLengths("right");
+    },
+
+    update: function () {
+        this.resetRayLength("left");
+        this.resetRayLength("right");
+        this.syncRayLength("left");
+        this.syncRayLength("right");
     },
 
     tick: function () {
@@ -50,30 +52,6 @@ AFRAME.registerComponent("raycaster-manager", {
             actualRay: document.querySelector(`#${hand}-hand .actual-ray`),
             styledRay: document.querySelector(`#${hand}-hand .styled-ray`),
         };
-    },
-
-    /**
-     * Stores the original raycaster distance and styled-ray scale for a hand so the ray can be restored after an intersection clears.
-     *
-     * @param {"left"|"right"} hand The controller side to cache defaults for.
-     */
-    storeDefaultLengths: function (hand) {
-        const defaults = this.defaultLengths[hand];
-        const { actualRay, styledRay } = this.getHandElements(hand);
-        const raycasterData = actualRay?.getAttribute("raycaster") || {};
-        const styledScale = styledRay?.getAttribute("scale");
-        // Store the default far distance of actual raycaster if not already stored
-        if (typeof defaults.far !== "number" && typeof raycasterData.far === "number") {
-            defaults.far = raycasterData.far;
-        }
-        // Store the default scale of the styled ray if not already stored
-        if (!defaults.scale && styledScale) {
-            defaults.scale = {
-                x: styledScale.x,
-                y: styledScale.y,
-                z: styledScale.z,
-            };
-        }
     },
 
     /**
@@ -101,45 +79,43 @@ AFRAME.registerComponent("raycaster-manager", {
      * @param {number} intersectionDistance The current distance to the nearest hit.
      */
     applyIntersectionLength: function (hand, intersectionDistance) {
-        const defaults = this.defaultLengths[hand];
         const { actualRay, styledRay } = this.getHandElements(hand);
-        // Ensure defaults are stored before applying intersection lengths
-        this.storeDefaultLengths(hand);
-        // Return if there is no actual ray or the default far distance isn't stored for some reason
-        if (!actualRay || typeof defaults.far !== "number") {
+        const rayLength = this.data.rayLength;
+        const styledScale = styledRay?.getAttribute("scale");
+        // Return if there is no actual ray or schema ray length is invalid
+        if (!actualRay || typeof rayLength !== "number") {
             return;
         }
         // Set buffer from schema and then add to the intersection distance
         const buffer = Math.max(0, this.data.intersectionBuffer);
-        const adjustedFar = Math.min(defaults.far, intersectionDistance + buffer);
+        const adjustedFar = Math.min(rayLength, intersectionDistance + buffer);
         // Update actual raycaster's far distance
         actualRay.setAttribute("raycaster", "far", adjustedFar);
-        // If there is no styled ray or default scale, return early to avoid errors
-        if (!styledRay || !defaults.scale || defaults.far <= 0) {
+        // If there is no styled ray or current scale, return early to avoid errors
+        if (!styledRay || !styledScale || rayLength <= 0) {
             return;
         }
         // Update the styled ray's scale.y distance
-        const nextScaleY = Math.min(defaults.scale.y, intersectionDistance);
-        styledRay.setAttribute("scale", { x: defaults.scale.x, y: nextScaleY, z: defaults.scale.z });
+        const nextScaleY = Math.min(rayLength, intersectionDistance);
+        styledRay.setAttribute("scale", { x: styledScale.x, y: nextScaleY, z: styledScale.z });
     },
 
     /**
-     * Restores the actual raycaster distance and styled-ray scale for the given controller back to their cached default values.
+     * Restores the actual raycaster distance and styled-ray scale for the given controller back to the schema-defined default value.
      *
      * @param {"left"|"right"} hand The controller side whose ray lengths should be reset.
      */
     resetRayLength: function (hand) {
-        const defaults = this.defaultLengths[hand];
         const { actualRay, styledRay } = this.getHandElements(hand);
-        // Ensure defaults are stored before restoring lengths
-        this.storeDefaultLengths(hand);
+        const rayLength = this.data.rayLength;
+        const styledScale = styledRay?.getAttribute("scale");
         // Restore the actual raycaster's far distance if possible
-        if (actualRay && typeof defaults.far === "number") {
-            actualRay.setAttribute("raycaster", "far", defaults.far);
+        if (actualRay && typeof rayLength === "number") {
+            actualRay.setAttribute("raycaster", "far", rayLength);
         }
         // Restore the styled ray's scale if possible
-        if (styledRay && defaults.scale) {
-            styledRay.setAttribute("scale", { x: defaults.scale.x, y: defaults.scale.y, z: defaults.scale.z });
+        if (styledRay && styledScale && typeof rayLength === "number") {
+            styledRay.setAttribute("scale", { x: styledScale.x, y: rayLength, z: styledScale.z });
         }
     },
 

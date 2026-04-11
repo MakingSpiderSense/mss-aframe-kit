@@ -5,7 +5,8 @@
     <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
     <script src="https://unpkg.com/aframe-environment-component@1.5.x/dist/aframe-environment-component.min.js"></script><!-- Not important -->
     <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.5.4/dist/aframe-extras.min.js"></script><!-- Not important -->
-    <script src="https://cdn.jsdelivr.net/gh/MakingSpiderSense/mss-aframe-kit@main/src/components/raycaster-manager/raycaster-manager.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/gh/MakingSpiderSense/mss-aframe-kit@main/src/components/raycaster-manager/raycaster-manager.js"></script> -->
+    <script src="../../src/components/raycaster-manager/raycaster-manager.js"></script><!-- Reminder: Switch back-->
 </head>
 
 <body>
@@ -20,6 +21,9 @@
         </a-assets>
 
         <!-- Box (will change color when user presses trigger) -->
+        <a-box class="interactable" toggle-color position="0 1 3.9" color="red" width=".5" height=".5" depth=".5"></a-box>
+
+        <!-- Box (will change color when user presses trigger) -->
         <a-box class="interactable" toggle-color position="0 1 4.5" color="red" width=".5" height=".5" depth=".5"></a-box>
 
         <!-- User -->
@@ -29,16 +33,16 @@
             <!-- Controllers -->
             <a-entity class="controllers">
                 <a-entity id="left-hand" meta-touch-controls="hand: left">
-                    <a-entity class="styled-ray ar-left" visible="false" rotation="60 0 0" scale="1 1.5 1" sound="src: #raycaster-beep; volume: .1; poolSize: 4;">
+                    <a-entity class="styled-ray ar-left" visible="false" rotation="60 0 0" sound="src: #raycaster-beep; volume: .1; poolSize: 4;">
                         <a-cylinder position="0 -0.5 0" height="1" radius="0.002" color="#ffffff" opacity=".4"></a-cylinder>
                     </a-entity>
-                    <a-entity class="actual-ray" rotation="-30 0 0"  raycaster="objects: .interactable; autoRefresh: false; enabled: false; far: 1.5; showLine: false; lineColor: red"></a-entity>
+                    <a-entity class="actual-ray" rotation="-30 0 0"  raycaster="objects: .interactable; autoRefresh: false; enabled: false; showLine: false; lineColor: red"></a-entity>
                 </a-entity>
                 <a-entity id="right-hand" meta-touch-controls="hand: right">
-                    <a-entity class="styled-ray ar-right" visible="false" rotation="60 0 0" scale="1 1.5 1" sound="src: #raycaster-beep; volume: .1; poolSize: 4;">
+                    <a-entity class="styled-ray ar-right" visible="false" rotation="60 0 0" sound="src: #raycaster-beep; volume: .1; poolSize: 4;">
                         <a-cylinder position="0 -0.5 0" height="1" radius="0.002" color="#ffffff" opacity=".4"></a-cylinder>
                     </a-entity>
-                    <a-entity class="actual-ray" rotation="-30 0 0"  raycaster="objects: .interactable; autoRefresh: false; enabled: false; far: 1.5; showLine: false; lineColor: red"></a-entity>
+                    <a-entity class="actual-ray" rotation="-30 0 0"  raycaster="objects: .interactable; autoRefresh: false; enabled: false; showLine: false; lineColor: red"></a-entity>
                 </a-entity>
             </a-entity>
         </a-entity>
