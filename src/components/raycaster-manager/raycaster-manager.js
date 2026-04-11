@@ -7,8 +7,6 @@
  *
  */
 
-// 🛠️ This seems like it could be the emulator, but when clicking right trigger to enable raycaster, then clicking again to hide it, it is not hiding and is fully visible. May need to test this in VR.
-    // 📝 This is actually expected behavior. The raycaster was intersecting an interactable object, so the system assumes interaction is desired and the raycaster does not disable.
 // 🛠️ When pulling away from two blocks, the raycaster goes through the further one briefly
 
 AFRAME.registerComponent("raycaster-manager", {
