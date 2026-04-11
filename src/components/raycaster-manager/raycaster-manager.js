@@ -7,8 +7,6 @@
  *
  */
 
-// 🛠️ When pulling away from two blocks, the raycaster goes through the further one briefly
-
 AFRAME.registerComponent("raycaster-manager", {
     schema: {
         rayLength: { type: "number", default: 1.5 },
