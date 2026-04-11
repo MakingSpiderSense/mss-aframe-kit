@@ -7,7 +7,6 @@
  *
  */
 
-// ✏️ Dry up some of the variables that are being repeated.
 // ✏️ Move raycaster length (styled and actual) to schema as one value.
 // 🛠️ This seems like it could be the emulator, but when clicking right trigger to enable raycaster, then clicking again to hide it, it is not hiding and is fully visible. May need to test this in VR.
 // 🛠️ When pulling away from two blocks, the raycaster goes through the further one briefly
@@ -40,14 +39,27 @@ AFRAME.registerComponent("raycaster-manager", {
     },
 
     /**
+     * Hand elements
+     *
+     * Returns the actual ray and styled ray elements for the requested controller hand.
+     *
+     * @param {"left"|"right"} hand The controller side whose ray elements should be retrieved.
+     */
+    getHandElements: function (hand) {
+        return {
+            actualRay: document.querySelector(`#${hand}-hand .actual-ray`),
+            styledRay: document.querySelector(`#${hand}-hand .styled-ray`),
+        };
+    },
+
+    /**
      * Stores the original raycaster distance and styled-ray scale for a hand so the ray can be restored after an intersection clears.
      *
      * @param {"left"|"right"} hand The controller side to cache defaults for.
      */
     storeDefaultLengths: function (hand) {
         const defaults = this.defaultLengths[hand];
-        const actualRay = document.querySelector(`#${hand}-hand .actual-ray`);
-        const styledRay = document.querySelector(`#${hand}-hand .styled-ray`);
+        const { actualRay, styledRay } = this.getHandElements(hand);
         const raycasterData = actualRay?.getAttribute("raycaster") || {};
         const styledScale = styledRay?.getAttribute("scale");
         // Store the default far distance of actual raycaster if not already stored
@@ -71,7 +83,7 @@ AFRAME.registerComponent("raycaster-manager", {
      * @returns {number|null} The nearest hit distance, if available.
      */
     getClosestIntersectionDistance: function (hand) {
-        const actualRay = document.querySelector(`#${hand}-hand .actual-ray`);
+        const { actualRay } = this.getHandElements(hand);
         const raycasterComponent = actualRay?.components?.raycaster;
         // Return null if no intersections found
         if (!raycasterComponent?.intersections?.length) {
@@ -90,8 +102,7 @@ AFRAME.registerComponent("raycaster-manager", {
      */
     applyIntersectionLength: function (hand, intersectionDistance) {
         const defaults = this.defaultLengths[hand];
-        const actualRay = document.querySelector(`#${hand}-hand .actual-ray`);
-        const styledRay = document.querySelector(`#${hand}-hand .styled-ray`);
+        const { actualRay, styledRay } = this.getHandElements(hand);
         // Ensure defaults are stored before applying intersection lengths
         this.storeDefaultLengths(hand);
         // Return if there is no actual ray or the default far distance isn't stored for some reason
@@ -119,8 +130,7 @@ AFRAME.registerComponent("raycaster-manager", {
      */
     resetRayLength: function (hand) {
         const defaults = this.defaultLengths[hand];
-        const actualRay = document.querySelector(`#${hand}-hand .actual-ray`);
-        const styledRay = document.querySelector(`#${hand}-hand .styled-ray`);
+        const { actualRay, styledRay } = this.getHandElements(hand);
         // Ensure defaults are stored before restoring lengths
         this.storeDefaultLengths(hand);
         // Restore the actual raycaster's far distance if possible
@@ -140,7 +150,7 @@ AFRAME.registerComponent("raycaster-manager", {
      * @param {"left"|"right"} hand The controller side whose ray should be synced.
      */
     syncRayLength: function (hand) {
-        const actualRay = document.querySelector(`#${hand}-hand .actual-ray`);
+        const { actualRay } = this.getHandElements(hand);
         const raycasterData = actualRay?.getAttribute("raycaster");
         if (!actualRay || !raycasterData?.enabled) {
             return;
@@ -165,7 +175,7 @@ AFRAME.registerComponent("raycaster-manager", {
      * @param {"left"|"right"} hand The controller side whose raycaster should be toggled.
      */
     toggleRaycaster: function (hand) {
-        const actualRay = document.querySelector(`#${hand}-hand .actual-ray`);
+        const { actualRay } = this.getHandElements(hand);
         if (!actualRay) return;
         const raycasterData = actualRay.getAttribute("raycaster") || {};
         const raycasterComponent = actualRay.components.raycaster;
@@ -192,8 +202,7 @@ AFRAME.registerComponent("raycaster-manager", {
      * @param {"left"|"right"} hand The controller side whose raycaster should be disabled.
      */
     disableRaycaster: function (hand) {
-        const styledRay = document.querySelector(`#${hand}-hand .styled-ray`);
-        const actualRay = document.querySelector(`#${hand}-hand .actual-ray`);
+        const { actualRay, styledRay } = this.getHandElements(hand);
         this.resetRayLength(hand);
         styledRay?.setAttribute("visible", false);
         actualRay?.setAttribute("raycaster", "enabled", false);
@@ -207,8 +216,7 @@ AFRAME.registerComponent("raycaster-manager", {
      * @param {"left"|"right"} hand The controller side whose raycaster should be enabled.
      */
     enableRaycaster: function (hand) {
-        const styledRay = document.querySelector(`#${hand}-hand .styled-ray`);
-        const actualRay = document.querySelector(`#${hand}-hand .actual-ray`);
+        const { actualRay, styledRay } = this.getHandElements(hand);
         this.resetRayLength(hand);
         styledRay?.setAttribute("visible", true);
         actualRay?.setAttribute("raycaster", { enabled: true });
