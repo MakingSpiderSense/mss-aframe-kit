@@ -14,7 +14,7 @@ const movementSpeedModifierComponent = {
         lineColor: { type: "color", default: "#ffffff" }, // Color of the speed lines
         lineCount: { type: "number", default: 16 }, // Number of speed line entities to create
         lineOpacity: { type: "number", default: 0.1 }, // Opacity of visible speed lines
-        lineDistance: { type: "number", default: .5 }, // Distance (meters) in front of the camera for speed lines
+        lineDistance: { type: "number", default: 0.5 }, // Distance (meters) in front of the camera for speed lines
         linePatternInterval: { type: "number", default: 100 }, // Time in ms between random speed line pattern changes
         boostSound: { type: "selector", default: "" }, // Optional entity with sound component to play when multiplier increases
     },
@@ -123,7 +123,7 @@ const movementSpeedModifierComponent = {
     /**
      * Add keyboard listeners
      *
-    * Adds desktop keyboard listeners so holding left shift and W enables the boost.
+     * Adds desktop keyboard listeners so holding left shift and W enables the boost.
      */
     addKeyboardListeners: function () {
         window.addEventListener("keydown", this.onKeyDown);
@@ -133,7 +133,7 @@ const movementSpeedModifierComponent = {
     /**
      * Remove keyboard listeners
      *
-    * Removes the desktop keyboard listeners used for keyboard sprint.
+     * Removes the desktop keyboard listeners used for keyboard sprint.
      */
     removeKeyboardListeners: function () {
         window.removeEventListener("keydown", this.onKeyDown);
@@ -165,7 +165,7 @@ const movementSpeedModifierComponent = {
     /**
      * Key down handler
      *
-    * Tracks desktop sprint keys so boost is active only while left shift and W are both held.
+     * Tracks desktop sprint keys so boost is active only while left shift and W are both held.
      *
      * @param {KeyboardEvent} event The keyboard event.
      */
@@ -191,7 +191,7 @@ const movementSpeedModifierComponent = {
     /**
      * Key up handler
      *
-    * Deactivates boost when either desktop sprint key is released.
+     * Deactivates boost when either desktop sprint key is released.
      *
      * @param {KeyboardEvent} event The keyboard event.
      */
@@ -286,9 +286,7 @@ const movementSpeedModifierComponent = {
         const movementControls = this.el.components["movement-controls"];
         const armSwingMovement = this.el.components["arm-swing-movement"];
         const keyboardSprintCompensation = this.data.keyboardEnabled && this.keyboardShiftActive ? 0.5 : 1; // Compensate for movement-controls' built-in 2x keyboard sprint multiplier by cutting in half and applying our own multiplier
-        const canAffectMovement =
-            (movementControls && this.baseMovementControlsSpeed !== null) ||
-            (armSwingMovement && this.baseArmSwingSpeedFactor !== null);
+        const canAffectMovement = (movementControls && this.baseMovementControlsSpeed !== null) || (armSwingMovement && this.baseArmSwingSpeedFactor !== null);
         const didAppliedMultiplierIncrease = appliedMultiplier > this.currentAppliedMultiplier; // Check for increase to play sound effect later
         this.currentAppliedMultiplier = appliedMultiplier; // Update to new applied multiplier
         // Apply the multipliers
@@ -443,5 +441,5 @@ const movementSpeedModifierComponent = {
         soundComponent.stopSound(); // Stop if already playing so that it can be retriggered immediately
         soundComponent.playSound();
     },
-}
+};
 AFRAME.registerComponent("movement-speed-modifier", movementSpeedModifierComponent);
