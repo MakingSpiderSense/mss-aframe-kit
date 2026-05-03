@@ -15,6 +15,8 @@ Tested up to **A-Frame 1.7.0**.
 - 🎧 <code>[music-player](docs/music-player/README.md)</code> lets you define a playlist of songs and control playback through VR controllers or keyboard keys. It includes shuffle and loop modes, and is ideal for creating a radio-like experience in your VR scenes.
 - 👐 <code>[raycaster-manager](docs/raycaster-manager/README.md)</code> handles VR controller raycaster toggling between controllers, activating one at a time with visual and audio feedback.
 
+**Note:** There are other components in the kit as well, but if they are not listed here, they should be considered to be in a more beta state.
+
 ## Conflicts
 
 If a custom component shares a name with one from `mss-aframe-kit` and it's not needed, it can be removed before registering the new one. For example:
