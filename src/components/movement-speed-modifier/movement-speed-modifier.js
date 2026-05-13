@@ -100,6 +100,7 @@ const movementSpeedModifierComponent = {
         this.resetSpeeds();
         this.removeSpeedLines();
     },
+
     /**
      * Add left controller input listeners
      *
@@ -110,6 +111,7 @@ const movementSpeedModifierComponent = {
         this.leftControllerEl.addEventListener("thumbstickdown", this.onThumbstickDown);
         this.leftControllerEl.addEventListener("axismove", this.onAxisMove);
     },
+
     /**
      * Remove left controller input listeners
      *
@@ -120,6 +122,7 @@ const movementSpeedModifierComponent = {
         this.leftControllerEl.removeEventListener("thumbstickdown", this.onThumbstickDown);
         this.leftControllerEl.removeEventListener("axismove", this.onAxisMove);
     },
+
     /**
      * Add keyboard listeners
      *
@@ -130,6 +133,7 @@ const movementSpeedModifierComponent = {
         window.addEventListener("keyup", this.onKeyUp);
         window.addEventListener("blur", this.onWindowBlur);
     },
+
     /**
      * Remove keyboard listeners
      *
@@ -140,6 +144,7 @@ const movementSpeedModifierComponent = {
         window.removeEventListener("keyup", this.onKeyUp);
         window.removeEventListener("blur", this.onWindowBlur);
     },
+
     /**
      * Thumbstick down handler
      *
@@ -150,6 +155,7 @@ const movementSpeedModifierComponent = {
         this.joystickActive = true;
         this.applySpeedMultiplier();
     },
+
     /**
      * Axis move handler
      *
@@ -162,6 +168,7 @@ const movementSpeedModifierComponent = {
         this.axisX = axis[2] || 0; // 2 represents the horizontal axis of the left joystick
         this.axisY = axis[3] || 0; // 3 represents the vertical axis of the left joystick
     },
+
     /**
      * Key down handler
      *
@@ -170,7 +177,6 @@ const movementSpeedModifierComponent = {
      * @param {KeyboardEvent} event The keyboard event.
      */
     onKeyDown: function (event) {
-        if (!this.data.keyboardEnabled) return;
         const wasKeyboardBoostActive = this.keyboardShiftActive && this.keyboardForwardActive;
         let boostKeysChangedState = false;
         if (event.code === "ShiftLeft" && !this.keyboardShiftActive) {
@@ -188,6 +194,7 @@ const movementSpeedModifierComponent = {
             this.applySpeedMultiplier();
         }
     },
+
     /**
      * Key up handler
      *
@@ -213,6 +220,7 @@ const movementSpeedModifierComponent = {
             this.applySpeedMultiplier();
         }
     },
+
     /**
      * Window blur handler
      *
@@ -224,6 +232,7 @@ const movementSpeedModifierComponent = {
         this.keyboardForwardActive = false;
         this.applySpeedMultiplier();
     },
+
     /**
      * Is joystick forward
      *
@@ -234,6 +243,7 @@ const movementSpeedModifierComponent = {
     isJoystickForward: function () {
         return this.axisY < 0;
     },
+
     /**
      * Cache base speeds
      *
@@ -249,6 +259,7 @@ const movementSpeedModifierComponent = {
             this.baseArmSwingSpeedFactor = armSwingMovement.data.speedFactor;
         }
     },
+
     /**
      * Get applied multiplier
      *
@@ -263,6 +274,33 @@ const movementSpeedModifierComponent = {
         // There should be no multiplier if boosts have not been activated
         return controllerBoostActive || keyboardBoostActive || manualBoostActive ? this.data.multiplier : 1;
     },
+
+    /**
+     * Check if moving forward
+     *
+     * Checks whether the player is currently moving forward by testing keyboard, joystick, and arm swing movement inputs to determine the active direction of travel.
+     *
+     * @returns {boolean} True if the player is moving forward using any input method, false otherwise.
+     */
+    isMovingForward: function () {
+        const armSwingMovement = this.el.components["arm-swing-movement"];
+        const keyboardMovingForward = this.keyboardForwardActive;
+        const joystickMovingForward = this.isJoystickForward();
+        const armSwingMovingForward = armSwingMovement && armSwingMovement.moving && !armSwingMovement.reverseHeld;
+        return keyboardMovingForward || joystickMovingForward || armSwingMovingForward;
+    },
+
+    /**
+     * Sync speed lines visibility
+     *
+     * Shows or hides the speed line effect based on whether speed lines are enabled, the active movement multiplier is greater than 1, and the player is currently moving forward.
+     *
+     * @returns {void} Does not return a value.
+     */
+    syncSpeedLinesVisibility: function () {
+        this.setSpeedLinesVisible(this.data.linesEnabled && this.currentAppliedMultiplier > 1 && this.isMovingForward());
+    },
+
     /**
      * Set manual boost active
      *
@@ -276,6 +314,7 @@ const movementSpeedModifierComponent = {
         this.manualBoostActive = nextManualBoostState;
         this.applySpeedMultiplier();
     },
+
     /**
      * Apply speed multiplier
      *
@@ -300,8 +339,9 @@ const movementSpeedModifierComponent = {
         if (didAppliedMultiplierIncrease && canAffectMovement) {
             this.playMultiplierSound();
         }
-        this.setSpeedLinesVisible(this.data.linesEnabled && appliedMultiplier > 1); // Only make visible when active multiplier is over 1
+        this.syncSpeedLinesVisibility();
     },
+
     /**
      * Reset speeds
      *
@@ -315,6 +355,7 @@ const movementSpeedModifierComponent = {
             this.el.setAttribute("arm-swing-movement", "speedFactor", this.baseArmSwingSpeedFactor);
         }
     },
+
     /**
      * Create speed lines
      *
@@ -343,6 +384,7 @@ const movementSpeedModifierComponent = {
         }
         this.randomizeSpeedLinePattern();
     },
+
     /**
      * Remove speed lines
      *
@@ -355,6 +397,7 @@ const movementSpeedModifierComponent = {
         this.lineContainer = null;
         this.lineElements = [];
     },
+
     /**
      * Update speed line color
      *
@@ -365,6 +408,7 @@ const movementSpeedModifierComponent = {
             line.el.setAttribute("material", "color", this.data.lineColor);
         }
     },
+
     /**
      * Set speed lines visible
      *
@@ -376,6 +420,7 @@ const movementSpeedModifierComponent = {
         if (!this.lineContainer) return; // Make sure the line container has already been built
         this.lineContainer.setAttribute("visible", visible);
     },
+
     /**
      * Update speed lines
      *
@@ -385,13 +430,15 @@ const movementSpeedModifierComponent = {
      * @param {number} timeDelta Time since the last frame.
      */
     updateSpeedLines: function (time, timeDelta) {
-        if (!this.lineContainer || !this.lineContainer.getAttribute("visible")) return; // Make sure line container is visible
         this.timeSinceLastLinePattern += timeDelta;
         if (this.timeSinceLastLinePattern < this.data.linePatternInterval) return; // Make sure enough time has passed
+        this.syncSpeedLinesVisibility();
+        if (!this.lineContainer || !this.lineContainer.getAttribute("visible")) return; // Make sure line container is visible
         // Reset time and randomize pattern
         this.timeSinceLastLinePattern = 0;
         this.randomizeSpeedLinePattern();
     },
+
     /**
      * Randomize speed line pattern
      *
@@ -429,6 +476,7 @@ const movementSpeedModifierComponent = {
             line.el.setAttribute("material", "opacity", this.data.lineOpacity);
         }
     },
+
     /**
      * Play multiplier sound
      *
