@@ -32,6 +32,7 @@ const movementSpeedModifierComponent = {
         this.currentAppliedMultiplier = 1; // Set to 1 initially as the boost needs to be triggered
         this.axisX = 0;
         this.axisY = 0;
+        this.touchCount = 0;
         this.timeSinceLastLinePattern = 0;
         // Bind handlers to this component instance, and store the references so listeners can be removed later
         this.onThumbstickDown = this.onThumbstickDown.bind(this);
@@ -39,10 +40,13 @@ const movementSpeedModifierComponent = {
         this.onKeyDown = this.onKeyDown.bind(this);
         this.onKeyUp = this.onKeyUp.bind(this);
         this.onWindowBlur = this.onWindowBlur.bind(this);
+        this.onTouchStart = this.onTouchStart.bind(this);
+        this.onTouchEnd = this.onTouchEnd.bind(this);
         // Set up input listeners
         this.leftControllerEl = this.data.leftController;
         this.addLeftControllerListeners();
         this.addKeyboardListeners();
+        this.addTouchListeners();
         // Create the speed line container and line elements
         this.lineContainer = null;
         this.lineElements = [];
@@ -97,6 +101,7 @@ const movementSpeedModifierComponent = {
     remove: function () {
         this.removeLeftControllerListeners();
         this.removeKeyboardListeners();
+        this.removeTouchListeners();
         this.resetSpeeds();
         this.removeSpeedLines();
     },
@@ -143,6 +148,28 @@ const movementSpeedModifierComponent = {
         window.removeEventListener("keydown", this.onKeyDown);
         window.removeEventListener("keyup", this.onKeyUp);
         window.removeEventListener("blur", this.onWindowBlur);
+    },
+
+    /**
+     * Add touch listeners
+     *
+     * Adds touch listeners to track the number of fingers on the screen for mobile movement.
+     */
+    addTouchListeners: function () {
+        window.addEventListener("touchstart", this.onTouchStart);
+        window.addEventListener("touchend", this.onTouchEnd);
+        window.addEventListener("touchcancel", this.onTouchEnd);
+    },
+
+    /**
+     * Remove touch listeners
+     *
+     * Removes the touch listeners used for mobile movement tracking.
+     */
+    removeTouchListeners: function () {
+        window.removeEventListener("touchstart", this.onTouchStart);
+        window.removeEventListener("touchend", this.onTouchEnd);
+        window.removeEventListener("touchcancel", this.onTouchEnd);
     },
 
     /**
@@ -227,10 +254,35 @@ const movementSpeedModifierComponent = {
      * Clears held keyboard sprint state if the window loses focus.
      */
     onWindowBlur: function () {
-        if (!this.keyboardShiftActive && !this.keyboardForwardActive) return;
+        if (!this.keyboardShiftActive && !this.keyboardForwardActive && this.touchCount === 0) return;
         this.keyboardShiftActive = false;
         this.keyboardForwardActive = false;
+        this.touchCount = 0;
         this.applySpeedMultiplier();
+    },
+
+    /**
+     * Touch start handler
+     *
+     * Tracks the number of fingers on the screen to detect forward or backward movement on mobile.
+     *
+     * @param {TouchEvent} event The touch event.
+     */
+    onTouchStart: function (event) {
+        this.touchCount = event.touches.length;
+        this.syncSpeedLinesVisibility();
+    },
+
+    /**
+     * Touch end handler
+     *
+     * Tracks the number of fingers on the screen to detect when movement stops on mobile.
+     *
+     * @param {TouchEvent} event The touch event.
+     */
+    onTouchEnd: function (event) {
+        this.touchCount = event.touches.length;
+        this.syncSpeedLinesVisibility();
     },
 
     /**
@@ -287,7 +339,8 @@ const movementSpeedModifierComponent = {
         const keyboardMovingForward = this.keyboardForwardActive;
         const joystickMovingForward = this.isJoystickForward();
         const armSwingMovingForward = armSwingMovement && armSwingMovement.moving && !armSwingMovement.reverseHeld;
-        return keyboardMovingForward || joystickMovingForward || armSwingMovingForward;
+        const touchMovingForward = this.touchCount === 1; // 1 finger = forward, 2 = backward
+        return keyboardMovingForward || joystickMovingForward || armSwingMovingForward || touchMovingForward;
     },
 
     /**
