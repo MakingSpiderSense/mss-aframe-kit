@@ -254,9 +254,10 @@ const movementSpeedModifierComponent = {
      * Clears held keyboard sprint state if the window loses focus.
      */
     onWindowBlur: function () {
-        if (!this.keyboardShiftActive && !this.keyboardForwardActive) return;
+        if (!this.keyboardShiftActive && !this.keyboardForwardActive && this.touchCount === 0) return;
         this.keyboardShiftActive = false;
         this.keyboardForwardActive = false;
+        this.touchCount = 0;
         this.applySpeedMultiplier();
     },
 
